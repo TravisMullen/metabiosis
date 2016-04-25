@@ -29,17 +29,19 @@ gulp.task( 'validate', function() {
 // run `clean` and copy over cleaned-up files from build 
 // if you don't want to manually update those spaces and commas
 gulp.task( 'clean', function() {
-    gulp.src( './js/*.js', 'gulpfile.js' )
+    // clean that shit up!
+    gulp.src( './js/*.js' )
         .pipe( jscs({ fix: true }) )
         .pipe( jscsstylish() )
-        .pipe( jscs.reporter( 'fail' ) );
-        .pipe( gulp.dest( 'js' ) );
+        .pipe( jscs.reporter( 'fail' ) )
+        .pipe( gulp.dest( './js' ) );
 
+    // might as well clean that gulpfile up, too!
     gulp.src( 'gulpfile.js' )
         .pipe( jscs({ fix: true }) )
         .pipe( jscsstylish() )
-        .pipe( jscs.reporter( 'fail' ) );
-        .pipe( gulp.dest( '/' ) );
+        .pipe( jscs.reporter( 'fail' ) )
+        .pipe( gulp.dest( './' ) );
 });
 
 gulp.task( 'watch', function() {
@@ -47,7 +49,7 @@ gulp.task( 'watch', function() {
         gulp.src( './js/*.js' )
             .pipe( jshint( '.jshintrc' ) )                      // check the quality
 
-            .pipe( jscs({ fix: false }) )                       // enforce style guide
+            .pipe( jscs({ fix: false } ) )                       // enforce style guide
             .pipe( jscsstylish.combineWithHintResults() )       // combine with jshint results 
 
             .pipe( notify( function( file ) {
@@ -123,3 +125,5 @@ gulp.task( 'watch', function() {
 });
 
 gulp.task( 'default', [ 'lint', 'validate', 'watch' ] );
+
+gulp.task( 'build', [ 'lint', 'clean' ] );
