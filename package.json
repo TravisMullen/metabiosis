@@ -1,0 +1,22 @@
+{
+  "name": "metabiosis",
+  "version": "1.0.0",
+  "description": "Nimble Browser Automation",
+  "author": "Travis Mullen <travis@travismullen.com>",
+  "license": "MIT",
+  "main": "gulpfile.js",
+  "keywords": [
+    "automation",
+    "browser"
+  ],
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-if": "^2.0.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-watch": "^4.3.5",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.1.0",
+    "map-stream": "0.0.6"
+  }
+}
