@@ -29,20 +29,26 @@ gulp.task( 'validate', function() {
 // run `clean` and copy over cleaned-up files from build 
 // if you don't want to manually update those spaces and commas
 gulp.task( 'clean', function() {
-    gulp.src( [ './js/*.js', 'gulpfile.js' ] )
+    gulp.src( './js/*.js', 'gulpfile.js' )
         .pipe( jscs({ fix: true }) )
         .pipe( jscsstylish() )
-        .pipe( jscs.reporter( 'fail' ) )
-        .pipe( gulp.dest( 'clean' ) );
+        .pipe( jscs.reporter( 'fail' ) );
+        .pipe( gulp.dest( 'js' ) );
+
+    gulp.src( 'gulpfile.js' )
+        .pipe( jscs({ fix: true }) )
+        .pipe( jscsstylish() )
+        .pipe( jscs.reporter( 'fail' ) );
+        .pipe( gulp.dest( '/' ) );
 });
 
 gulp.task( 'watch', function() {
     watch( './js/*.js', function() {
         gulp.src( './js/*.js' )
-            .pipe( jshint( '.jshintrc' ) )
+            .pipe( jshint( '.jshintrc' ) )                      // check the quality
 
-            .pipe( jscs({ fix: false }) )                 // enforce style guide
-            .pipe( jscsstylish.combineWithHintResults() )     // combine with jshint results 
+            .pipe( jscs({ fix: false }) )                       // enforce style guide
+            .pipe( jscsstylish.combineWithHintResults() )       // combine with jshint results 
 
             .pipe( notify( function( file ) {
                 var msg = '';

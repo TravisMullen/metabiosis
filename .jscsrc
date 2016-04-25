@@ -2,7 +2,8 @@
     "requireCamelCaseOrUpperCaseIdentifiers": true,
     "requireCapitalizedConstructors": true,
     "requireParenthesesAroundIIFE": true,
-    "disallowMixedSpacesAndTabs": false,
+    "disallowMixedSpacesAndTabs": true,
+    
     "validateQuoteMarks": "'",
 
     "requireSpacesInsideBrackets": true,

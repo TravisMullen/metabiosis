@@ -70,7 +70,7 @@ var mBss = ( function() {
     /* ========================================================================== *
         Private Functions
      * ========================================================================== */
-    function queueHandler() {
+    function queueHandler(sdg) {
 
 
         // how many types left
@@ -116,7 +116,7 @@ var mBss = ( function() {
                 // console.log("pass into the handler // eventQueue[0]", dis.eventQueue[0]);
                 // dis.handler();
 
-                queueHandler();
+                queueHandler(fff);
                 // fire event
                 // if success then remove it
                 //
