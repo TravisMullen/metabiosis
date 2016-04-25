@@ -1,6 +1,43 @@
 {
-  "requireCamelCaseOrUpperCaseIdentifiers": true,
-  "requireCapitalizedConstructors": true,
-  "requireParenthesesAroundIIFE": true,
-  "validateQuoteMarks": "'"
+    "requireCamelCaseOrUpperCaseIdentifiers": true,
+    "requireCapitalizedConstructors": true,
+    "requireParenthesesAroundIIFE": true,
+    "disallowMixedSpacesAndTabs": false,
+    "validateQuoteMarks": "'",
+
+    "requireSpacesInsideBrackets": true,
+    "requireSpacesInNamedFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
+    "requireSpacesInsideParentheses": {
+        "all": true,
+        "except": ["{", "}", "\""]
+    },
+    "requireSpacesInsideParenthesizedExpression": {
+        "allExcept": [ "{", "}" ]
+    },
+    "disallowSpaceBeforeSemicolon": true,
+    "requireSpaceAfterComma": {
+        "allExcept": ["trailing"]
+    },
+    "requireCurlyBraces": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch",
+        "case",
+        "default"
+    ],
+    "disallowYodaConditions": [
+        "==",
+        "===",
+        "!=",
+        "!=="
+    ],
+    "requireArrayDestructuring": true,
+    "maximumLineLength": 120,
+    "requireDotNotation": true
 }

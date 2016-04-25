@@ -61,7 +61,8 @@
     // "esnext" : true,
 
 
-    // // Personal styling preferences.
+    // Personal styling preferences. 
+    // will get cleaned up by JSCS
     "newcap"        : true,   // Require capitalization of all constructor functions e.g. `new F()`.
     "noempty"       : true,   // Prohibit use of empty blocks.
     "nonew"         : true,   // Prohibit use of constructors for side-effects.

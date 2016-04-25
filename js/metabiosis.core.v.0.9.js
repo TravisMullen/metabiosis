@@ -1,5 +1,5 @@
 'use strict';
-var mBss = (function() {
+var mBss = ( function() {
 
     /* ========================================================================== *
            __       
@@ -77,7 +77,7 @@ var mBss = (function() {
         var rKeys = __itemKeys.length,
             // how many items for each type left
             // get first
-            rItems = __items[__itemKeys[0]].length,
+            rItems = __items[ __itemKeys[ 0 ] ].length,
             // how many actions left
             // first first
             rActions = activeActions.length;
@@ -92,9 +92,9 @@ var mBss = (function() {
         // if no more items, remove type
 
 
-        if (rActions.length === 0) {
+        if ( rActions.length === 0 ) {
 
-            mbss.log('we got not actions!');
+            mbss.log( 'we got not actions!' );
         }
 
         // durations.events = 
@@ -104,15 +104,15 @@ var mBss = (function() {
         // }
 
 
-        console.log('move that handler along');
+        console.log( 'move that handler along' );
     }
     // events
-    function startEvents(c) {
-        __HEART.BEAT = window.setInterval(function() {
-            mbss.log('beating!', ++__HEART.COUNT);
+    function startEvents( c ) {
+        __HEART.BEAT = window.setInterval( function() {
+            mbss.log( 'beating!', ++__HEART.COUNT );
 
 
-            if (eventQueue.length) {
+            if ( eventQueue.length ) {
                 // console.log("pass into the handler // eventQueue[0]", dis.eventQueue[0]);
                 // dis.handler();
 
@@ -124,26 +124,26 @@ var mBss = (function() {
             }
 
             // stop self
-            window.clearInterval(__HEART.BEAT);
-        }, __HEART.RATE);
+            window.clearInterval( __HEART.BEAT );
+        }, __HEART.RATE );
     }
 
     // get events for each items
-    function queueEvents(pathsForKey, key) {
+    function queueEvents( pathsForKey, key ) {
         var actions = [],
             events = [],
             last;
 
 
-        for (var i = 0; i < pathsForKey.length; i++) {
+        for ( var i = 0; i < pathsForKey.length; i++ ) {
 
-            actions.push(pathsForKey[i]);
+            actions.push( pathsForKey[ i ] );
 
             // if there is a next action and its `fibulate`
-            if (pathsForKey[i + 1] && !pathsForKey[i + 1].fibulate) {
+            if ( pathsForKey[ i + 1 ] && !pathsForKey[ i + 1 ].fibulate ) {
                 // dont add the event yet
                 // we already added to the action so we good fam
-                events.push(actions.slice(0));
+                events.push( actions.slice( 0 ) );
                 actions = [];
                 // } else {
             }
@@ -154,17 +154,17 @@ var mBss = (function() {
         }
 
         // one events are renderd, place in to a hash
-        eventHash[key] = events;
+        eventHash[ key ] = events;
 
     }
 
-    function processEvents(paths, keys) {
+    function processEvents( paths, keys ) {
 
         // do some stuff here to prep any items
-        for (var i = 0; i < keys.length; i++) {
+        for ( var i = 0; i < keys.length; i++ ) {
             // items and item keys to set-up paths for each
-            if (paths[keys[i]]) {
-                queueEvents(paths[keys[i]], keys[i]);
+            if ( paths[ keys[ i ] ] ) {
+                queueEvents( paths[ keys[ i ] ], keys[ i ] );
             }
         }
         // console.log("processItems queueEvents.length",queueEvents.length);
@@ -182,33 +182,33 @@ var mBss = (function() {
     // build events queues
     // build items queue
     // 
-    function processConfig(cfg) {
-        if (typeof(cfg.paths) === 'object') {
+    function processConfig( cfg ) {
+        if ( typeof( cfg.paths ) === 'object' ) {
             __paths = cfg.paths;
             // mbss.log("we got paths!");
         } else {
-            mbss.log('you need some action paths!');
+            mbss.log( 'you need some action paths!' );
             return false;
         }
-        if (typeof(cfg.paths) === 'object') {
-            __itemKeys = Object.keys(cfg.items);
+        if ( typeof( cfg.paths ) === 'object' ) {
+            __itemKeys = Object.keys( cfg.items );
             __items = cfg.items;
-            mbss.log('itemKeys: ' + __itemKeys);
+            mbss.log( 'itemKeys: ' + __itemKeys );
         } else {
-            mbss.log('you need some action items!');
+            mbss.log( 'you need some action items!' );
             return false;
         }
 
-        mbss.log('valid config');
+        mbss.log( 'valid config' );
 
         // var p = processItems( __items, __itemKeys );
         // if (p) {
         //     mbss.log("items and actions are processed");
         //     return true;
         // } 
-        var p = processEvents(__paths, __itemKeys);
-        if (p) {
-            mbss.log('items and actions are processed');
+        var p = processEvents( __paths, __itemKeys );
+        if ( p ) {
+            mbss.log( 'items and actions are processed' );
             return true;
         }
     }
@@ -474,7 +474,8 @@ var mBss = (function() {
     //     console.log("bindModel", bindModel);
     //     boundAction = actionModel.action.bind(bindModel); // bind current scope for fn and data access
     //     try {
-    //         compiledAction = boundAction(target, this.active.action.augmented); // call and pass `targat` and `augmented` for subtarget
+    //      // call and pass `targat` and `augmented` for subtarget
+    //         compiledAction = boundAction(target, this.active.action.augmented); 
     //     } catch (e) {
     //         if (e instanceof TypeError) {
     //             console.log("TypeError with Action", e);
@@ -545,7 +546,7 @@ var mBss = (function() {
 
 
 
-    function failedCheck(model) {
+    function failedCheck( model ) {
         // console.log("failedCheck", model);
         // // ** how to tell if key (oject name)this.failed.attampts > model.attempts || this.__failedEventAttemptsMax
         // var failedEventAttemptsMax = model.attempts || this.__failedEventAttemptsMax;
@@ -584,7 +585,7 @@ var mBss = (function() {
         // // return n;
     }
 
-    function clickSyth(target) {
+    function clickSyth( target ) {
         // var canceled,
         //     evt = new MouseEvent('click', {
         //         'view': window,
@@ -644,25 +645,25 @@ var mBss = (function() {
     // mbss.actions = {
     //     click: clickSyth
     // };
-    mbss.run = function(config) {
-        var c = processConfig(config);
-        if (c) {
-            mbss.log('starting the show!');
-            startEvents(c);
+    mbss.run = function( config ) {
+        var c = processConfig( config );
+        if ( c ) {
+            mbss.log( 'starting the show!' );
+            startEvents( c );
         }
     };
 
     mbss.kill = function() {
-        mbss.log('stop it');
-        window.clearInterval(__HEART.BEAT);
+        mbss.log( 'stop it' );
+        window.clearInterval( __HEART.BEAT );
     };
 
-    mbss.log = function(message, variable) {
-        if (mbss.__development) {
-            if (variable) {
-                console.log(message, variable);
+    mbss.log = function( message, variable ) {
+        if ( mbss.__development ) {
+            if ( variable ) {
+                console.log( message, variable );
             } else {
-                console.log(message);
+                console.log( message );
             }
             return false;
         }
@@ -676,7 +677,7 @@ var mBss = (function() {
 
     // exported 
     return mbss;
-}());
+}() );
 
 
 /* ========================================================================== *
@@ -691,7 +692,7 @@ var conny = {
     //  'hats',
     // ],
     paths: {
-        'hats': [{
+        'hats': [ {
                 target: '[href$="shop/all"]',
                 action: true
             }, {
@@ -707,26 +708,26 @@ var conny = {
             }, { // is sold out
                 // filtered,
                 target: '.inner-article',
-                action: function(target) {
-                    console.log('target.length', target.length);
+                action: function( target ) {
+                    console.log( 'target.length', target.length );
                     var augmented = [],
-                        fkey = this._bios.filterKey('Sold Out'),
+                        fkey = this._bios.filterKey( 'Sold Out' ),
                         content = target,
                         fres; // check for ns
-                    console.log('fkey', fkey);
+                    console.log( 'fkey', fkey );
                     this._config.turd = 'travis';
-                    for (var i = content.length - 1; i >= 0; i--) {
-                        fres = this._bios.filterKey(content[i].innerHTML);
-                        if (fres.indexOf(fkey) === -1) {
-                            console.log('fres', fres);
-                            augmented.unshift(target[i]);
+                    for ( var i = content.length - 1; i >= 0; i-- ) {
+                        fres = this._bios.filterKey( content[ i ].innerHTML );
+                        if ( fres.indexOf( fkey ) === -1 ) {
+                            console.log( 'fres', fres );
+                            augmented.unshift( target[ i ] );
                         }
                     }
 
                     // if ( augmented.length ) {
 
                     // }
-                    console.log('filterKey(\'Sold Out\') // augmented.length', augmented.length);
+                    console.log( 'filterKey(\'Sold Out\') // augmented.length', augmented.length );
                     return augmented; // if length 0 return false
                 }
             }, {
@@ -744,31 +745,31 @@ var conny = {
                 // } else {
                 //     action(target, a1);
                 // }
-                action: function(target, augmentedParent) {
-                    console.log('THIS', this);
+                action: function( target, augmentedParent ) {
+                    console.log( 'THIS', this );
                     var augmented = [],
-                        fkey = this._bios.filterKey(this._config.key), // key needs to be defined in instances
+                        fkey = this._bios.filterKey( this._config.key ), // key needs to be defined in instances
                         fres;
                     // bind config file to get access to key
                     // content = target.all || target; // check for ns
-                    console.log('fkey', fkey);
-                    console.log('this._config.key', this._config.key);
-                    console.log('this._config', this._config);
+                    console.log( 'fkey', fkey );
+                    console.log( 'this._config.key', this._config.key );
+                    console.log( 'this._config', this._config );
 
-                    for (var i = augmentedParent.length - 1; i >= 0; i--) {
-                        fres = this._bios.filterKey(augmentedParent[i].innerHTML);
-                        console.log('fres', fres);
-                        console.log('fres.indexOf(fkey)', fres.indexOf(fkey));
-                        if (fres.indexOf(fkey) >= 0) {
-                            augmented.unshift(augmentedParent[i]);
+                    for ( var i = augmentedParent.length - 1; i >= 0; i-- ) {
+                        fres = this._bios.filterKey( augmentedParent[ i ].innerHTML );
+                        console.log( 'fres', fres );
+                        console.log( 'fres.indexOf(fkey)', fres.indexOf( fkey ) );
+                        if ( fres.indexOf( fkey ) >= 0 ) {
+                            augmented.unshift( augmentedParent[ i ] );
                         }
                     }
-                    console.log('augmented.length', augmented.length);
-                    if (augmented.length) {
-                        console.log('filterKey(this._config.key) // new augmented', augmented);
+                    console.log( 'augmented.length', augmented.length );
+                    if ( augmented.length ) {
+                        console.log( 'filterKey(this._config.key) // new augmented', augmented );
                         return augmented;
                     } else {
-                        console.log("filterKey(this._config.key) // last augmentedParent", augmentedParent);
+                        console.log( 'filterKey(this._config.key) // last augmentedParent', augmentedParent );
                         return augmentedParent;
                     }
                 }
@@ -789,31 +790,31 @@ var conny = {
                 // } else {
                 //     action(target, a1);
                 // }
-                action: function(target, augmentedParent) {
-                        console.log('THIS', this);
+                action: function( target, augmentedParent ) {
+                        console.log( 'THIS', this );
                         var augmented = [],
-                            fkey = this._bios.filterKey(this._config.style), // key needs to be defined in instances
+                            fkey = this._bios.filterKey( this._config.style ), // key needs to be defined in instances
                             fres;
                         // bind config file to get access to key
                         // content = target.all || target; // check for ns
-                        console.log('fkey', fkey);
-                        console.log('this._config.key', this._config.key);
-                        console.log('this._config.turd', this._config.turd);
+                        console.log( 'fkey', fkey );
+                        console.log( 'this._config.key', this._config.key );
+                        console.log( 'this._config.turd', this._config.turd );
 
-                        for (var i = augmentedParent.length - 1; i >= 0; i--) {
-                            fres = this._bios.filterKey(augmentedParent[i].innerHTML);
-                            console.log('fres', fres);
-                            console.log('fres.indexOf(fkey)', fres.indexOf(fkey));
-                            if (fres.indexOf(fkey) >= 0) {
-                                augmented.unshift(augmentedParent[i]);
+                        for ( var i = augmentedParent.length - 1; i >= 0; i-- ) {
+                            fres = this._bios.filterKey( augmentedParent[ i ].innerHTML );
+                            console.log( 'fres', fres );
+                            console.log( 'fres.indexOf(fkey)', fres.indexOf( fkey ) );
+                            if ( fres.indexOf( fkey ) >= 0 ) {
+                                augmented.unshift( augmentedParent[ i ] );
                             }
                         }
-                        console.log('style :: // augmented.length', augmented.length);
-                        if (augmented.length) {
-                            console.log('style // new augmented', augmented);
+                        console.log( 'style :: // augmented.length', augmented.length );
+                        if ( augmented.length ) {
+                            console.log( 'style // new augmented', augmented );
                             return augmented;
                         } else {
-                            console.log('style // last augmentedParent', augmentedParent);
+                            console.log( 'style // last augmentedParent', augmentedParent );
                             return augmentedParent;
                         }
                     }
@@ -849,7 +850,7 @@ var conny = {
                 action: true
             }
         ],
-        'checkout': [{
+        'checkout': [ {
                 target: '[href$="checkout"]',
                 action: true
             },
@@ -861,22 +862,22 @@ var conny = {
         ]
     },
     items: {
-        'hats': [{
+        'hats': [ {
             name: 'Cord Zip Bell Hat',
             key: 'cord zip bell hat',
-            keys: ['cord zip', 'bell hat'],
+            keys: [ 'cord zip', 'bell hat' ],
             size: 'M/L',
             style: 'olive'
         }, {
             name: 'Corduroy 5-Panel',
             key: 'Corduroy 5 Panel',
-            keys: ['Corduroy', '5-Panel'],
+            keys: [ 'Corduroy', '5-Panel' ],
             style: 'navy'
         }, {
             name: 'Camp Cap',
             key: 'camp cap'
-        }],
-        checkout: [{
+        } ],
+        checkout: [ {
             name: 'Offal Knausgaard', // text input
             email: 'offal@chicharrones.com', // text input
             tel: '(555) 322-3331', // text input
@@ -896,10 +897,10 @@ var conny = {
             ccCVV: null, // security code // text input
 
             acceptTerms: true // checkbox
-        }]
+        } ]
     }
 
 };
 
 
-mBss.run(conny); // { paths: { type : [  actions[] ] } , items: { type : [ item: {} ] } };
+mBss.run( conny ); // { paths: { type : [  actions[] ] } , items: { type : [ item: {} ] } };

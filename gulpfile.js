@@ -1,65 +1,70 @@
 /* globals require */
 
 'use strict';
-var gulp = require('gulp'),
-    notify = require('gulp-notify'),
-    watch = require('gulp-watch'),
-    jshint = require('gulp-jshint'),
-    jscs = require('gulp-jscs'),
+var gulp = require( 'gulp' ),
+    notify = require( 'gulp-notify' ),
+    watch = require( 'gulp-watch' ),
+    jshint = require( 'gulp-jshint' ),
+    jscs = require( 'gulp-jscs' ),
+    jscsstylish = require( 'gulp-jscs-stylish' ),
     errors = [],
     warns = [],
     hadWarns = false,
     hadErrors = false;
 
 
-gulp.task('lint', function() {
-    gulp.src(['./js/*.js', 'gulpfile.js'])
-        .pipe(jshint('.jshintrc'))
-        .pipe(jshint.reporter('jshint-stylish'));
+gulp.task( 'lint', function() {
+    gulp.src( [ './js/*.js', 'gulpfile.js' ] )
+        .pipe( jshint( '.jshintrc' ) )
+        .pipe( jshint.reporter( 'jshint-stylish' ) );
 });
 
-gulp.task('validate', function() {
-    gulp.src(['./js/*.js', 'gulpfile.js'])
-        .pipe(jscs({ fix: false }))
-        .pipe(jscs.reporter())
-        .pipe(jscs.reporter('fail'));
+gulp.task( 'validate', function() {
+    gulp.src( [ './js/*.js', 'gulpfile.js' ] )
+        .pipe( jscs({ fix: false }) )
+        // .pipe(jscs.reporter())
+        .pipe( jscsstylish() );
 });
 
 // run `clean` and copy over cleaned-up files from build 
 // if you don't want to manually update those spaces and commas
-gulp.task('clean', function() {
-    gulp.src(['./js/*.js', 'gulpfile.js'])
-        .pipe(jscs({ fix: true }))
-        .pipe(jscs.reporter())
-        .pipe(jscs.reporter('fail'))
-        .pipe(gulp.dest('build'));
+gulp.task( 'clean', function() {
+    gulp.src( [ './js/*.js', 'gulpfile.js' ] )
+        .pipe( jscs({ fix: true }) )
+        .pipe( jscsstylish() )
+        .pipe( jscs.reporter( 'fail' ) )
+        .pipe( gulp.dest( 'clean' ) );
 });
 
-gulp.task('watch', function() {
-    watch('./js/*.js', function() {
-        gulp.src('./js/*.js')
-            .pipe(jshint('.jshintrc'))
-            .pipe(notify(function(file) {
+gulp.task( 'watch', function() {
+    watch( './js/*.js', function() {
+        gulp.src( './js/*.js' )
+            .pipe( jshint( '.jshintrc' ) )
+
+            .pipe( jscs({ fix: false }) )                 // enforce style guide
+            .pipe( jscsstylish.combineWithHintResults() )     // combine with jshint results 
+
+            .pipe( notify( function( file ) {
                 var msg = '';
 
                 // send notifications 
                 // -- for errors only, not warnings
                 // -- if code was dirty and then bacame clean
 
-                if (file.jshint.success && hadErrors === false && hadWarns === false) {
+                if ( file.jshint.success && hadErrors === false && hadWarns === false ) {
                     // Don't show something if success without previous errors
                     return false;
                 }
 
-                if (!file.jshint.results) {
+                if ( !file.jshint.results ) {
                     file.jshint.results = [];
                 }
 
                 // Don't show warnings
-                warns = file.jshint.results.map(function(data) {
+                warns = file.jshint.results.map( function( data ) {
                     // only show errors `err.error.code.indexOf('E') !== -1` (not warnings)
 
-                    if (data.error && data.error.code.indexOf('E') !== -1) {
+                    if ( data.error && data.error.code.indexOf( 'E' ) !== -1 ) {
                         //  console.log("data.error.code.indexOf('E')",data.error.code.indexOf('E'));
                         return '(' + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
                     } else {
@@ -68,11 +73,11 @@ gulp.task('watch', function() {
                 });
 
                 // Did we purge all the warnings?
-                if (warns.length === 0) {
-                    if (hadWarns) {
+                if ( warns.length === 0 ) {
+                    if ( hadWarns ) {
                         hadWarns = false;
                         hadErrors = false;
-                        return 'PASSED :: This jawn is passing `jshint` without \warnings or errors.';
+                        return 'PASSED :: This jawn is passing `jshint` and `jscs` without \warnings or errors.';
                     }
                 } else {
                     hadWarns = true;
@@ -80,19 +85,19 @@ gulp.task('watch', function() {
 
 
                 // remove warnings (false) from map
-                errors = warns.filter(function(value) {
+                errors = warns.filter( function( value ) {
                     return value;
                 });
 
                 // Any errors?
-                if (errors.length === 0) {
+                if ( errors.length === 0 ) {
 
                     // success or not, if its no longer dirty
                     // let us know!
-                    if (hadErrors) {
+                    if ( hadErrors ) {
                         hadErrors = false;
-                        msg += 'PASSED :: This jawn is passing `jshint` without errors.';
-                        if (hadWarns) {
+                        msg += 'PASSED :: This jawn is passing `jshint` and `jscs` without errors.';
+                        if ( hadWarns ) {
                             msg += ' You still have ' + warns.length + ' warnings. Nbd. ¯\\_(ツ)_/¯';
                         }
                         return msg;
@@ -104,10 +109,11 @@ gulp.task('watch', function() {
                 }
 
 
-                return file.relative + ' (' + errors.length + ' errors)\n' + errors.join('\n');
-            }))
-            .pipe(jshint.reporter('jshint-stylish'));
+                return file.relative + ' (' + errors.length + ' errors)\n' + errors.join( '\n' );
+            }) )
+
+            .pipe( jshint.reporter( 'jshint-stylish' ) );
     });
 });
 
-gulp.task('default', ['lint','validate','watch']);
+gulp.task( 'default', [ 'lint', 'validate', 'watch' ] );
