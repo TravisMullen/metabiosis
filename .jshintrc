@@ -32,13 +32,13 @@
 
     // // ECMAScript 5.
     "es5"           : true,   // Allow ECMAScript 5 syntax.
-    "strict"        : false,  // Require `use strict` pragma  in every file.
-    "globalstrict"  : false,  // Allow global "use strict" (also enables 'strict').
+    "strict"        : true,  // Require `use strict` pragma  in every file.
+    "globalstrict"  : true,  // Allow global "use strict" (also enables 'strict').
 
 
     // // The Good Parts.
     "asi"           : true,  // Tolerate Automatic Semicolon Insertion (no semicolons).
-    // :: deprecated "laxbreak"      : true,   // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.
+    // "laxbreak"      : true,   // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.
     "bitwise"       : true,   // Prohibit bitwise operators (&, |, ^, etc.).
     "boss"          : false,  // Tolerate assignments inside if, for & while. Usually conditions & loops are for comparison, not assignments.
     "curly"         : true,   // Require {} for every new block or scope.
@@ -57,6 +57,8 @@
     "shadow"        : false,  // Allows re-define variables later in code e.g. `var x=1; x=2;`.
     "supernew"      : false,  // Tolerate `new function () { ... };` and `new Object;`.
     "undef"         : true,   // Require all non-global variables be declared before they are used.
+
+    // "esnext" : true,
 
 
     // // Personal styling preferences.

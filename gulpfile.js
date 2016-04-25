@@ -1,9 +1,11 @@
 /* globals require */
 
+'use strict';
 var gulp = require('gulp'),
     notify = require('gulp-notify'),
     watch = require('gulp-watch'),
     jshint = require('gulp-jshint'),
+    jscs = require('gulp-jscs'),
     errors = [],
     warns = [],
     hadWarns = false,
@@ -16,12 +18,30 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('jshint-stylish'));
 });
 
+gulp.task('validate', function() {
+    gulp.src(['./js/*.js', 'gulpfile.js'])
+        .pipe(jscs({ fix: false }))
+        .pipe(jscs.reporter())
+        .pipe(jscs.reporter('fail'));
+});
+
+// run `clean` and copy over cleaned-up files from build 
+// if you don't want to manually update those spaces and commas
+gulp.task('clean', function() {
+    gulp.src(['./js/*.js', 'gulpfile.js'])
+        .pipe(jscs({ fix: true }))
+        .pipe(jscs.reporter())
+        .pipe(jscs.reporter('fail'))
+        .pipe(gulp.dest('build'));
+});
+
 gulp.task('watch', function() {
     watch('./js/*.js', function() {
         gulp.src('./js/*.js')
             .pipe(jshint('.jshintrc'))
             .pipe(notify(function(file) {
                 var msg = '';
+
                 // send notifications 
                 // -- for errors only, not warnings
                 // -- if code was dirty and then bacame clean
@@ -39,21 +59,20 @@ gulp.task('watch', function() {
                 warns = file.jshint.results.map(function(data) {
                     // only show errors `err.error.code.indexOf('E') !== -1` (not warnings)
 
-                    if (data.error && data.error.code.indexOf('E') !== -1 ) {
-                    // 	console.log("data.error.code.indexOf('E')",data.error.code.indexOf('E'));
-                        return "(" + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+                    if (data.error && data.error.code.indexOf('E') !== -1) {
+                        //  console.log("data.error.code.indexOf('E')",data.error.code.indexOf('E'));
+                        return '(' + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
                     } else {
-                    	return false;
+                        return false;
                     }
                 });
 
-                console.log("warns.length",warns.length);
-                console.log("hadWarns",hadWarns);
                 // Did we purge all the warnings?
                 if (warns.length === 0) {
-                    if ( hadWarns ) {
+                    if (hadWarns) {
                         hadWarns = false;
-                        return 'This jawn is passing `jshint` without \warnings or errors.';
+                        hadErrors = false;
+                        return 'PASSED :: This jawn is passing `jshint` without \warnings or errors.';
                     }
                 } else {
                     hadWarns = true;
@@ -61,10 +80,10 @@ gulp.task('watch', function() {
 
 
                 // remove warnings (false) from map
-            	errors = warns.filter(function(value) {
-            		return value;
-            	});
-            	
+                errors = warns.filter(function(value) {
+                    return value;
+                });
+
                 // Any errors?
                 if (errors.length === 0) {
 
@@ -72,9 +91,9 @@ gulp.task('watch', function() {
                     // let us know!
                     if (hadErrors) {
                         hadErrors = false;
-                        msg += 'This jawn is passing `jshint` without errors.';
+                        msg += 'PASSED :: This jawn is passing `jshint` without errors.';
                         if (hadWarns) {
-                            msg += ' You still have '+warns.length+' warnings. Nbd. ¯\\_(ツ)_/¯';
+                            msg += ' You still have ' + warns.length + ' warnings. Nbd. ¯\\_(ツ)_/¯';
                         }
                         return msg;
                     }
@@ -85,10 +104,10 @@ gulp.task('watch', function() {
                 }
 
 
-                return file.relative + " (" + errors.length + " errors)\n" + errors.join("\n");
+                return file.relative + ' (' + errors.length + ' errors)\n' + errors.join('\n');
             }))
             .pipe(jshint.reporter('jshint-stylish'));
     });
 });
 
-gulp.task('default', ['lint', 'watch']);
+gulp.task('default', ['lint','validate','watch']);
