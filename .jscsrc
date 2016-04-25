@@ -5,6 +5,7 @@
     "disallowMixedSpacesAndTabs": true,
     
     "validateQuoteMarks": "'",
+    "disallowTrailingComma": true,
 
     "requireSpacesInsideBrackets": true,
     "requireSpacesInNamedFunctionExpression": {
@@ -38,7 +39,18 @@
         "!=",
         "!=="
     ],
-    "requireArrayDestructuring": true,
     "maximumLineLength": 120,
-    "requireDotNotation": true
+    "requireDotNotation": true,
+
+    "requireObjectKeysOnNewLine": {
+        "allExcept": ["sameLine"]
+    },
+    "requireSpaceAfterObjectKeys": true,
+    "requireSpaceBeforeDestructuredValues": true,
+    "requireSpaceBeforeObjectValues": true,
+    //"requireSpacesInsideImportedObjectBraces": true,
+
+    // not sure about these...
+    "requireArrayDestructuring": true,
+    "requireObjectDestructuring": true
 }

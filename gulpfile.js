@@ -6,7 +6,7 @@ var gulp = require( 'gulp' ),
     watch = require( 'gulp-watch' ),
     jshint = require( 'gulp-jshint' ),
     jscs = require( 'gulp-jscs' ),
-    jscsstylish = require( 'gulp-jscs-stylish' ),
+    jscsStylish = require( 'gulp-jscs-stylish' ),
     errors = [],
     warns = [],
     hadWarns = false,
@@ -21,36 +21,22 @@ gulp.task( 'lint', function() {
 
 gulp.task( 'validate', function() {
     gulp.src( [ './js/*.js', 'gulpfile.js' ] )
-        .pipe( jscs({ fix: false }) )
-        // .pipe(jscs.reporter())
-        .pipe( jscsstylish() );
+        .pipe( jshint( '.jshintrc' ) )                      // check the quality
+
+        .pipe( jscs({ fix : false } ) )                       // enforce style guide
+        .pipe( jscsStylish.combineWithHintResults() )       // combine with jshint results 
+
+        .pipe( jshint.reporter( 'jshint-stylish' ) );
 });
 
-// run `clean` and copy over cleaned-up files from build 
-// if you don't want to manually update those spaces and commas
-gulp.task( 'clean', function() {
-    // clean that shit up!
-    gulp.src( './js/*.js' )
-        .pipe( jscs({ fix: true }) )
-        .pipe( jscsstylish() )
-        .pipe( jscs.reporter( 'fail' ) )
-        .pipe( gulp.dest( './js' ) );
-
-    // might as well clean that gulpfile up, too!
-    gulp.src( 'gulpfile.js' )
-        .pipe( jscs({ fix: true }) )
-        .pipe( jscsstylish() )
-        .pipe( jscs.reporter( 'fail' ) )
-        .pipe( gulp.dest( './' ) );
-});
 
 gulp.task( 'watch', function() {
     watch( './js/*.js', function() {
         gulp.src( './js/*.js' )
             .pipe( jshint( '.jshintrc' ) )                      // check the quality
 
-            .pipe( jscs({ fix: false } ) )                       // enforce style guide
-            .pipe( jscsstylish.combineWithHintResults() )       // combine with jshint results 
+            // .pipe( jscs({ fix : false } ) )                       // enforce style guide
+            // .pipe( jscsStylish.combineWithHintResults() )       // combine with jshint results 
 
             .pipe( notify( function( file ) {
                 var msg = '';
@@ -124,6 +110,32 @@ gulp.task( 'watch', function() {
     });
 });
 
-gulp.task( 'default', [ 'lint', 'validate', 'watch' ] );
 
-gulp.task( 'build', [ 'lint', 'clean' ] );
+// run `clean` and copy over cleaned-up files from build 
+// if you don't want to manually update those spaces and commas
+
+gulp.task( 'clean', function() {
+    // clean that shit up!
+    gulp.src( './js/*.js' )
+        .pipe( jscs({ fix : true }) )
+        .pipe( jscsStylish() )
+        // .pipe( jscs.reporter( ) )
+        .pipe( jscs.reporter( 'fail' ) )
+        .pipe( gulp.dest( './js' ) );
+});
+
+gulp.task( 'clean-gulpfile', function() {
+    // might as well clean that gulpfile up, too!
+    gulp.src( 'gulpfile.js' )
+        .pipe( jscs({ fix : true }) )
+        .pipe( jscsStylish() )
+        .pipe( jscs.reporter( 'fail' ) )
+        .pipe( gulp.dest( './' ) );
+});
+
+
+// general tasks
+
+gulp.task( 'default', [ 'clean', 'watch' ] );
+
+gulp.task( 'build', [ 'clean', 'validate' ] );

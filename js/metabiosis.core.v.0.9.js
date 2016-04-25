@@ -34,9 +34,9 @@ var mBss = ( function() {
          * ========================================================================== */
 
         __HEART = {
-            BEAT: undefined, // drop (or stop) the beat
-            COUNT: 0, // keep a count just incase
-            RATE: 1000 // 1s
+            BEAT : undefined, // drop (or stop) the beat
+            COUNT : 0, // keep a count just incase
+            RATE : 1000 // 1s
         },
 
         // actions consolidated into events
@@ -107,7 +107,7 @@ var mBss = ( function() {
         console.log( 'move that handler along' );
     }
     // events
-    function startEvents( c ) {
+    function startEvents() {
         __HEART.BEAT = window.setInterval( function() {
             mbss.log( 'beating!', ++__HEART.COUNT );
 
@@ -129,49 +129,95 @@ var mBss = ( function() {
     }
 
     // get events for each items
-    function queueEvents( pathsForKey, key ) {
+    function queueEvents( item, pathsForItem ) {
         var actions = [],
-            events = [],
-            last;
+            events = [];
+        //     last;
+        console.log( 'queueEvents // pathsForItem', pathsForItem );
+        console.log( 'queueEvents // item', item );
+        // events = 
+        // var events = pathsForItem.map(function(action) {
+            
+        //     actions.push( pathsForItem[ i ] );
 
+        //     // if there is a next action and its `fibulate`
+        //     if ( pathsForItem[ i + 1 ] && !pathsForItem[ i + 1 ].fibulate ) {
+        //         // dont add the event yet
+        //         // we already added to the action so we good fam
+        //         events.push( actions.slice( 0 ) );
+        //         actions = [];
+        //         // } else {
+        //     }
+        // });
 
-        for ( var i = 0; i < pathsForKey.length; i++ ) {
-
-            actions.push( pathsForKey[ i ] );
+        for ( var i = 0; i < pathsForItem.length; i++ ) {
+            actions.push( pathsForItem[ i ] );
 
             // if there is a next action and its `fibulate`
-            if ( pathsForKey[ i + 1 ] && !pathsForKey[ i + 1 ].fibulate ) {
+            if ( ( pathsForItem[ i + 1 ] && !pathsForItem[ i + 1 ].fibulate ) || ( ( pathsForItem.length-1 ) === i ) ) {
                 // dont add the event yet
                 // we already added to the action so we good fam
-                events.push( actions.slice( 0 ) );
+                // events.push( actions.slice( 0 ) );
+                events.push( actions.map( function( action ) { 
+                    console.log("action",action);
+                    var act = action;
+                    act.$$config = item;
+                    return act;
+                }) );
                 actions = [];
-                // } else {
             }
 
-            // console.log("events",events);
-            // console.log("actions",actions);
-            // console.log("actions.length",actions.length);
+            console.log( 'events', events );
+            console.log( 'actions', actions );
+            console.log( 'actions.length', actions.length );
         }
 
         // one events are renderd, place in to a hash
-        eventHash[ key ] = events;
+        // eventHash[ key ] = events;
+        eventQueue = eventQueue.concat( events );
 
     }
 
-    function processEvents( paths, keys ) {
+    // put items in event queue
+    function processItems( items, paths ) {
+        // console.log( 'processItems ?? items', items );
+        // console.log( 'processItems ?? keys', keys );
 
+        // var queue = items.map( function( item ) {
+        //     // if we have a type and paths of that type
+        //     // queue it up
+        //     if ( item.pathType && path[ item.pathType ] ) {
+        //         queueEvents( item, path[ item.pathType ] );
+        //     }
+        // });
         // do some stuff here to prep any items
-        for ( var i = 0; i < keys.length; i++ ) {
+        for ( var i = 0; i < items.length; i++ ) {
+            console.log("items[ i ]",items[ i ]);
+            console.log("paths",paths);
+            console.log("paths[ items[ i ].pathType",paths[ items[ i ].pathType] );
             // items and item keys to set-up paths for each
-            if ( paths[ keys[ i ] ] ) {
-                queueEvents( paths[ keys[ i ] ], keys[ i ] );
-            }
+            queueEvents( items[ i ], paths[ items[ i ].pathType ] );
         }
         // console.log("processItems queueEvents.length",queueEvents.length);
-        // if (queueEvents.length) {
-        //     return true;
-        // }
+        if ( queueEvents.length ) {
+            return true;
+        }
     }
+
+    // function processEvents( paths, keys ) {
+    //     var 
+    //     // do some stuff here to prep any items
+    //     // for ( var i = 0; i < keys.length; i++ ) {
+    //     //     // items and item keys to set-up paths for each
+    //     //     if ( paths[ keys[ i ] ] ) {
+    //     //         queueEvents( paths[ keys[ i ] ], keys[ i ] );
+    //     //     }
+    //     // }
+    //     // console.log("processItems queueEvents.length",queueEvents.length);
+    //     // if (queueEvents.length) {
+    //     //     return true;
+    //     // }
+    // }
 
     // create event queue for each item
 
@@ -190,10 +236,11 @@ var mBss = ( function() {
             mbss.log( 'you need some action paths!' );
             return false;
         }
-        if ( typeof( cfg.paths ) === 'object' ) {
-            __itemKeys = Object.keys( cfg.items );
+        // if ( typeof( cfg.items ) === 'object' ) {
+        if ( typeof( cfg.items ) === 'object' && cfg.items.length ) {
+            // __itemKeys = Object.keys( cfg.items );
             __items = cfg.items;
-            mbss.log( 'itemKeys: ' + __itemKeys );
+            // mbss.log( 'itemKeys: ' + __itemKeys );
         } else {
             mbss.log( 'you need some action items!' );
             return false;
@@ -201,31 +248,17 @@ var mBss = ( function() {
 
         mbss.log( 'valid config' );
 
-        // var p = processItems( __items, __itemKeys );
-        // if (p) {
-        //     mbss.log("items and actions are processed");
-        //     return true;
-        // } 
-        var p = processEvents( __paths, __itemKeys );
+        var p = processItems( __items, __paths );
         if ( p ) {
             mbss.log( 'items and actions are processed' );
             return true;
         }
+        // var p = processEvents( __paths, __itemKeys );
+        // if ( p ) {
+        //     mbss.log( 'items and actions are processed' );
+        //     return true;
+        // }
     }
-
-    // put items in event queue
-    // function processItems( items, keys ) {
-
-    //     // do some stuff here to prep any items
-    //     for (var i = 0; i < keys.length; i++) {
-    //         // items and item keys to set-up paths for each
-    //         queueEvents( items[ keys[i] ], keys[i], paths );
-    //     }
-    //     // console.log("processItems queueEvents.length",queueEvents.length);
-    //     // if (queueEvents.length) {
-    //     //     return true;
-    //     // }
-    // }
 
     // // consolidate events
     // function addActionPaths(item, key, paths) {
@@ -529,7 +562,7 @@ var mBss = ( function() {
     //     } else {
     //         // if is valid taget and not out of attempts
     //         // if nothing else fails... its time to be clicked
-    //         // if (this.active.event.type !== 'validate') {
+    //         // if (this.active.event.pathType !== 'validate') {
     //         this.clickSyth(target);
     //         // }
     //     }
@@ -691,14 +724,14 @@ var conny = {
     // types: [
     //  'hats',
     // ],
-    paths: {
-        'hats': [ {
-                target: '[href$="shop/all"]',
-                action: true
+    paths : {
+        hats : [ {
+                target : '[href$="shop/all"]',
+                action : true
             }, {
-                target: '[href$="shop/all/hats"]',
-                action: true,
-                rate: 3000 // slow for just this action
+                target : '[href$="shop/all/hats"]',
+                action : true,
+                rate : 3000 // slow for just this action
                     // }, { 
                     //     // validates shouldnt fire clicks for true
                     //     target: '[href$="shop/all/hats"].current',
@@ -707,8 +740,8 @@ var conny = {
 
             }, { // is sold out
                 // filtered,
-                target: '.inner-article',
-                action: function( target ) {
+                target : '.inner-article',
+                action : function( target ) {
                     console.log( 'target.length', target.length );
                     var augmented = [],
                         fkey = this._bios.filterKey( 'Sold Out' ),
@@ -732,8 +765,8 @@ var conny = {
                 }
             }, {
                 // target: false,
-                subtarget: '.inner-article h1',
-                fibulate: true,
+                subtarget : '.inner-article h1',
+                fibulate : true,
                 // subtargets to be queried on each top level scope (no actions), 
                 // then passing in the augmented from previous target. 
                 // if no value then treated as target
@@ -745,7 +778,7 @@ var conny = {
                 // } else {
                 //     action(target, a1);
                 // }
-                action: function( target, augmentedParent ) {
+                action : function( target, augmentedParent ) {
                     console.log( 'THIS', this );
                     var augmented = [],
                         fkey = this._bios.filterKey( this._config.key ), // key needs to be defined in instances
@@ -777,8 +810,8 @@ var conny = {
 
             {
                 // target: false,
-                subtarget: '.inner-article p',
-                fibulate: true,
+                subtarget : '.inner-article p',
+                fibulate : true,
                 // subtargets to be queried on each top level scope (no actions), 
                 // then passing in the augmented from previous target. 
                 // if no value then treated as target
@@ -790,7 +823,7 @@ var conny = {
                 // } else {
                 //     action(target, a1);
                 // }
-                action: function( target, augmentedParent ) {
+                action : function( target, augmentedParent ) {
                         console.log( 'THIS', this );
                         var augmented = [],
                             fkey = this._bios.filterKey( this._config.style ), // key needs to be defined in instances
@@ -841,65 +874,237 @@ var conny = {
 
 
 
-                submit: '[href]'
+                submit : '[href]'
 
                 // subtarget: '.inner-article [href]',
                 // action: true
             }, {
-                target: '[value="add to cart"]',
-                action: true
+                target : '[value="add to cart"]',
+                action : true
             }
         ],
-        'checkout': [ {
-                target: '[href$="checkout"]',
-                action: true
+        jackets : [ {
+                target : '[href$="shop/all"]',
+                action : true
+            }, {
+                target : '[href$="shop/all/jackets"]',
+                action : true,
+                rate : 3000 // slow for just this action
+                    // }, { 
+                    //     // validates shouldnt fire clicks for true
+                    //     target: '[href$="shop/all/hats"].current',
+                    //     // validate: true 
+                    //     action: true
+
+            }, { // is sold out
+                // filtered,
+                target : '.inner-article',
+                action : function( target ) {
+                    console.log( 'target.length', target.length );
+                    var augmented = [],
+                        fkey = this._bios.filterKey( 'Sold Out' ),
+                        content = target,
+                        fres; // check for ns
+                    console.log( 'fkey', fkey );
+                    this._config.turd = 'travis';
+                    for ( var i = content.length - 1; i >= 0; i-- ) {
+                        fres = this._bios.filterKey( content[ i ].innerHTML );
+                        if ( fres.indexOf( fkey ) === -1 ) {
+                            console.log( 'fres', fres );
+                            augmented.unshift( target[ i ] );
+                        }
+                    }
+
+                    // if ( augmented.length ) {
+
+                    // }
+                    console.log( 'filterKey(\'Sold Out\') // augmented.length', augmented.length );
+                    return augmented; // if length 0 return false
+                }
+            }, {
+                // target: false,
+                subtarget : '.inner-article h1',
+                fibulate : true,
+                // subtargets to be queried on each top level scope (no actions), 
+                // then passing in the augmented from previous target. 
+                // if no value then treated as target
+
+                // for loop will be required to gather all subtargets
+
+                // if (subtarget) {
+                //     action(last, a1);
+                // } else {
+                //     action(target, a1);
+                // }
+                action : function( target, augmentedParent ) {
+                    console.log( 'THIS', this );
+                    var augmented = [],
+                        fkey = this._bios.filterKey( this._config.key ), // key needs to be defined in instances
+                        fres;
+                    // bind config file to get access to key
+                    // content = target.all || target; // check for ns
+                    console.log( 'fkey', fkey );
+                    console.log( 'this._config.key', this._config.key );
+                    console.log( 'this._config', this._config );
+
+                    for ( var i = augmentedParent.length - 1; i >= 0; i-- ) {
+                        fres = this._bios.filterKey( augmentedParent[ i ].innerHTML );
+                        console.log( 'fres', fres );
+                        console.log( 'fres.indexOf(fkey)', fres.indexOf( fkey ) );
+                        if ( fres.indexOf( fkey ) >= 0 ) {
+                            augmented.unshift( augmentedParent[ i ] );
+                        }
+                    }
+                    console.log( 'augmented.length', augmented.length );
+                    if ( augmented.length ) {
+                        console.log( 'filterKey(this._config.key) // new augmented', augmented );
+                        return augmented;
+                    } else {
+                        console.log( 'filterKey(this._config.key) // last augmentedParent', augmentedParent );
+                        return augmentedParent;
+                    }
+                }
+            },
+
+            {
+                // target: false,
+                subtarget : '.inner-article p',
+                fibulate : true,
+                // subtargets to be queried on each top level scope (no actions), 
+                // then passing in the augmented from previous target. 
+                // if no value then treated as target
+
+                // for loop will be required to gather all subtargets
+
+                // if (subtarget) {
+                //     action(last, a1);
+                // } else {
+                //     action(target, a1);
+                // }
+                action : function( target, augmentedParent ) {
+                        console.log( 'THIS', this );
+                        var augmented = [],
+                            fkey = this._bios.filterKey( this._config.style ), // key needs to be defined in instances
+                            fres;
+                        // bind config file to get access to key
+                        // content = target.all || target; // check for ns
+                        console.log( 'fkey', fkey );
+                        console.log( 'this._config.key', this._config.key );
+                        console.log( 'this._config.turd', this._config.turd );
+
+                        for ( var i = augmentedParent.length - 1; i >= 0; i-- ) {
+                            fres = this._bios.filterKey( augmentedParent[ i ].innerHTML );
+                            console.log( 'fres', fres );
+                            console.log( 'fres.indexOf(fkey)', fres.indexOf( fkey ) );
+                            if ( fres.indexOf( fkey ) >= 0 ) {
+                                augmented.unshift( augmentedParent[ i ] );
+                            }
+                        }
+                        console.log( 'style :: // augmented.length', augmented.length );
+                        if ( augmented.length ) {
+                            console.log( 'style // new augmented', augmented );
+                            return augmented;
+                        } else {
+                            console.log( 'style // last augmentedParent', augmentedParent );
+                            return augmentedParent;
+                        }
+                    }
+                    // on product PAGE
+
+                // }, {
+                //     subtarget: '.inner-article p',
+                //     action: f3unction(target, augmentedParent) {
+                //         console.log("THIS", this);
+                //         var augmented = [],
+                //             this._bios.filterKey(this._config.style); // key needs to be defined in instances
+                //         // bind config file to get access to key
+                //         for (var i = augmentedParent.length - 1; i >= 0; i--) {
+                //             if (augmentedParent[i].innerHTML.indexOf(fkey) === -1) {
+                //                 augmented.unshift(augmentedParent[i]);
+                //             }
+                //         }
+                //         return augmented; // if length 0 return false
+                //     }
+            }, {
+                // default: true (first/0 index in array)
+                // or pass in index to attempt to be pulled from array
+                // submit: true
+
+
+
+                submit : '[href]'
+
+                // subtarget: '.inner-article [href]',
+                // action: true
+            }, {
+                target : '[value="add to cart"]',
+                action : true
+            }
+        ],
+        checkout : [
+            {
+                target : '[href$="checkout"]',
+                action : true
             },
             // fill out form
             {
-                target: '.button.checkout',
-                action: true
+                target : '.button.checkout',
+                action : true
             }
         ]
     },
-    items: {
-        'hats': [ {
-            name: 'Cord Zip Bell Hat',
-            key: 'cord zip bell hat',
-            keys: [ 'cord zip', 'bell hat' ],
-            size: 'M/L',
-            style: 'olive'
+    items : [
+        {
+            name : 'Cord Zip Bell Hat',
+            key : 'cord zip bell hat',
+            keys : [ 'cord zip', 'bell hat' ],
+            size : 'M/L',
+            style : 'olive',
+            pathType : 'hats'
         }, {
-            name: 'Corduroy 5-Panel',
-            key: 'Corduroy 5 Panel',
-            keys: [ 'Corduroy', '5-Panel' ],
-            style: 'navy'
+            name : 'Corduroy 5-Panel',
+            key : 'Corduroy 5 Panel',
+            keys : [ 'Corduroy', '5-Panel' ],
+            style : 'navy',
+            pathType : 'hats'
         }, {
-            name: 'Camp Cap',
-            key: 'camp cap'
-        } ],
-        checkout: [ {
-            name: 'Offal Knausgaard', // text input
-            email: 'offal@chicharrones.com', // text input
-            tel: '(555) 322-3331', // text input
-            address: '8633 Intelligentsia St', // text input
-            zip: '19146', // text input
-            city: 'Williamsburg', // text input
+            name : 'Camp Cap',
+            key : 'camp cap',
+            pathType : 'hats'
+        }, {
+            name : 'north face',
+            key : 'north face',
+            pathType : 'jackets'
+        },
 
-            state: 'TX', // drop down
-            country: 'USA', // drop down
+        {
+            name : 'checkout',
+            key : 'north face',
+            data : {
+                name : 'Offal Knausgaard', // text input
+                email : 'offal@chicharrones.com', // text input
+                tel : '(555) 322-3331', // text input
+                address : '8633 Intelligentsia St', // text input
+                zip : '19146', // text input
+                city : 'Williamsburg', // text input
 
-            saveAddress: true, // checkbox
+                state : 'TX', // drop down
+                country : 'USA', // drop down
 
-            ccType: null, // drop down
-            ccNumber: null,
-            ccExpDateMM: null, // drop down
-            ccExpDateYY: null, // drop down
-            ccCVV: null, // security code // text input
+                saveAddress : true, // checkbox
 
-            acceptTerms: true // checkbox
-        } ]
-    }
+                ccType : null, // drop down
+                ccNumber : null,
+                ccExpDateMM : null, // drop down
+                ccExpDateYY : null, // drop down
+                ccCVV : null, // security code // text input
 
+                acceptTerms : true // checkbox
+            },
+            pathType : 'checkout'
+        }
+
+    ]
 };
 
 
