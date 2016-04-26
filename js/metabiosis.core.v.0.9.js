@@ -159,7 +159,7 @@ var mBss = ( function() {
                 // we already added to the action so we good fam
                 // events.push( actions.slice( 0 ) );
                 events.push( actions.map( function( action ) { 
-                    console.log("action",action);
+                    console.log( 'action', action );
                     var act = action;
                     act.$$config = item;
                     return act;
@@ -192,9 +192,9 @@ var mBss = ( function() {
         // });
         // do some stuff here to prep any items
         for ( var i = 0; i < items.length; i++ ) {
-            console.log("items[ i ]",items[ i ]);
-            console.log("paths",paths);
-            console.log("paths[ items[ i ].pathType",paths[ items[ i ].pathType] );
+            console.log( 'items[ i ]', items[ i ] );
+            console.log( 'paths', paths );
+            console.log( 'paths[ items[ i ].pathType', paths[ items[ i ].pathType ] );
             // items and item keys to set-up paths for each
             queueEvents( items[ i ], paths[ items[ i ].pathType ] );
         }
