@@ -131,7 +131,8 @@ var mBss = ( function() {
     // get events for each items
     function queueEvents( item, pathsForItem ) {
         var actions = [],
-            events = [];
+            events = [],
+            action;
         //     last;
         console.log( 'queueEvents // pathsForItem', pathsForItem );
         console.log( 'queueEvents // item', item );
@@ -151,19 +152,15 @@ var mBss = ( function() {
         // });
 
         for ( var i = 0; i < pathsForItem.length; i++ ) {
-            actions.push( pathsForItem[ i ] );
+            action = Object.create( pathsForItem[ i ] );
+            action.$config = Object.create( item );
+            actions.push( action );
 
             // if there is a next action and its `fibulate`
             if ( ( pathsForItem[ i + 1 ] && !pathsForItem[ i + 1 ].fibulate ) || ( ( pathsForItem.length-1 ) === i ) ) {
                 // dont add the event yet
                 // we already added to the action so we good fam
-                // events.push( actions.slice( 0 ) );
-                events.push( actions.map( function( action ) { 
-                    console.log( 'action', action );
-                    var act = action;
-                    act.$$config = item;
-                    return act;
-                }) );
+                events.push( actions.slice( 0 ) );
                 actions = [];
             }
 
@@ -1053,7 +1050,7 @@ var conny = {
             }
         ]
     },
-    items : [
+    items : [ // order is assumed to be true
         {
             name : 'Cord Zip Bell Hat',
             key : 'cord zip bell hat',
