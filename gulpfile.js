@@ -31,15 +31,16 @@ gulp.task( 'validate', function() {
 
 
 gulp.task( 'watch', function() {
-    watch( './js/*.js', function() {
-        gulp.src( './js/*.js' )
+    watch( './js/*.js', function( file ) {
+
+        gulp.src( file.history ) // use `.history[]` to pipe only file with change event
             .pipe( jshint( '.jshintrc' ) )                      // check the quality
 
             // .pipe( jscs({ fix : false } ) )                       // enforce style guide
             // .pipe( jscsStylish.combineWithHintResults() )       // combine with jshint results 
 
             .pipe( notify( function( file ) {
-                var msg = '';
+                var note = { title: '', message: '' };
 
                 // send notifications 
                 // -- for errors only, not warnings
@@ -50,6 +51,7 @@ gulp.task( 'watch', function() {
                     return false;
                 }
 
+
                 if ( !file.jshint.results ) {
                     file.jshint.results = [];
                 }
@@ -58,9 +60,11 @@ gulp.task( 'watch', function() {
                 warns = file.jshint.results.map( function( data ) {
                     // only show errors `err.error.code.indexOf('E') !== -1` (not warnings)
 
+                    note.title = file.relative;
+                    
                     if ( data.error && data.error.code.indexOf( 'E' ) !== -1 ) {
                         //  console.log("data.error.code.indexOf('E')",data.error.code.indexOf('E'));
-                        return '(' + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+                        return note.message = '(' + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
                     } else {
                         return false;
                     }
@@ -71,7 +75,7 @@ gulp.task( 'watch', function() {
                     if ( hadWarns ) {
                         hadWarns = false;
                         hadErrors = false;
-                        return 'PASSED :: This jawn is passing `jshint` and `jscs` without \warnings or errors.';
+                        return note.message = 'PASSED :: This jawn is passing `jshint` and `jscs` without \warnings or errors.';
                     }
                 } else {
                     hadWarns = true;
@@ -90,20 +94,19 @@ gulp.task( 'watch', function() {
                     // let us know!
                     if ( hadErrors ) {
                         hadErrors = false;
-                        msg += 'PASSED :: This jawn is passing `jshint` and `jscs` without errors.';
+                        note.message += 'PASSED :: This jawn is passing `jshint` and `jscs` without errors.';
                         if ( hadWarns ) {
-                            msg += ' You still have ' + warns.length + ' warnings. Nbd. ¯\\_(ツ)_/¯';
+                            note.message += ' You still have ' + warns.length + ' warnings. Nbd. ¯\\_(ツ)_/¯';
                         }
-                        return msg;
+                        return note;
                     }
 
                     return false;
                 } else {
                     hadErrors = true;
                 }
-
-
-                return file.relative + ' (' + errors.length + ' errors)\n' + errors.join( '\n' );
+                note.message = ' (' + errors.length + ' errors)\n' + errors.join( '\n' )
+                return  note;
             }) )
 
             .pipe( jshint.reporter( 'jshint-stylish' ) );

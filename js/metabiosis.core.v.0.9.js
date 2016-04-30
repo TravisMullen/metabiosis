@@ -163,7 +163,9 @@ var mBss = ( function() {
     function dropABeat() {
         // only looking for the first `rate` in the array
         // because fibulated actions should not have ratea at all 
-        var rate = ( __eventQueue[ 0 ] &&  __eventQueue[ 0 ][ 0 ] && __eventQueue[ 0 ][ 0 ].rate ) ?
+        var rate = ( __eventQueue[ 0 ] &&  
+                        __eventQueue[ 0 ][ 0 ] && 
+                        __eventQueue[ 0 ][ 0 ].rate ) ?
                     __eventQueue[ 0 ][ 0 ].rate :
                     __HEART.RATE;
 
