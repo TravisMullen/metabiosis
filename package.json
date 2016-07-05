@@ -1,26 +1,32 @@
 {
-    "name": "metabiosis",
-    "version": "1.0.0",
-    "description": "Nimble Browser Automation",
-    "author": "Travis Mullen <travis@travismullen.com>",
-    "license": "MIT",
-    "scripts": { 
-        "start" : "gulp",
-        "install" : "npm install && gulp build"
-    },
-    "main": "gulpfile.js",
-    "keywords": [
-        "automation",
-        "browser"
-    ],
-    "devDependencies": {
-        "gulp": "^3.9.1",
-        "gulp-jscs": "^3.0.2",
-        "gulp-jscs-stylish": "^1.4.0",
-        "gulp-jshint": "^2.0.0",
-        "gulp-notify": "^2.2.0",
-        "gulp-watch": "^4.3.5",
-        "jshint": "^2.9.2",
-        "jshint-stylish": "^2.1.0"
-    }
+  "name": "metabiosis",
+  "version": "1.0.0",
+  "description": "Nimble Browser Automation",
+  "author": "Travis Mullen <travis@travismullen.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "gulp",
+    "install": "npm install && gulp build"
+  },
+  "main": "gulpfile.js",
+  "keywords": [
+    "automation",
+    "browser"
+  ],
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jasmine": "^2.4.0",
+    "gulp-jscs": "^3.0.2",
+    "gulp-jscs-stylish": "^1.4.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-watch": "^4.3.5",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.1.0",
+    "karma": "^1.1.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "karma-spec-reporter": "0.0.26",
+    "vpower-ui": "https://github.com/Viridity-Energy/vpower-ui.git"
+  }
 }

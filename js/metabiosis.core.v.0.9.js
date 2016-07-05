@@ -1051,5 +1051,5 @@ var conny = {
 
 
 
-
-mBss.run( conny ); // { paths: { type : [  actions[] ] } , items: { type : [ item: {} ] } };
+console.log( 'hello world' );
+// mBss.run( conny ); // { paths: { type : [  actions[] ] } , items: { type : [ item: {} ] } };

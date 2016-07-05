@@ -157,8 +157,8 @@ var keyCodes = ( function() {
                     'cancelable' : true
                 }),
                 press;
-                console.log("fig",config);
-                console.log("fig.elm",config.elm);
+                console.log( 'fig', config );
+                console.log( 'fig.elm', config.elm );
                 config.$elm = document.querySelector( config.elm );
                 press = !config.$elm.dispatchEvent( kpress );
                 console.log( 'kpress : keyCode', config.keyCode );
@@ -231,7 +231,7 @@ var keyCodes = ( function() {
 
         if ( typeof text === 'string' ) {
             for ( var i = 0; i < text.length; i++ ) {
-                var t = text[ i ].slice(0);
+                var t = text[ i ].slice( 0 );
                 if ( t.match( /[A-Z]/ ) ) {
                     actions.push( codes.shift  );
                 }
@@ -243,7 +243,7 @@ var keyCodes = ( function() {
         //     console.log("blurred!");
             clickSyth( elm, true );
         // };
-        console.log("actions",actions);
+        console.log( 'actions', actions );
         applyKeys( actions, elm )
 
         // else {
