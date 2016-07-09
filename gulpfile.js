@@ -151,7 +151,7 @@ gulp.task( 'clean-gulpfile', function() {
 
 gulp.task( 'test-lint', function() {
 
-    gulp.src( [ './spec/*.js' ] )
+    gulp.src( [ './spec/**/*.js' ] )
         .pipe( jshint( '.jshintrc' ) )
         // .pipe(jshint({ predef: 'jasmine '}))
         .pipe( jshint({

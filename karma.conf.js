@@ -8,9 +8,16 @@ module.exports = function(config) {
         // browsers: ['PhantomJS','PhantomJS_custom'],
 
         files: [
+            // libs (if ever used)
             // 'libs/jquery-1.11.3.min.js',
-            'js/metabiosis.v.1.0.js',
-            'spec/**/*.js'
+
+            // mockument
+            'spec/mockument/mockument.js',
+            'spec/mockument/mockumentSpec.js',
+
+            // Metabiosis // mBss
+            // 'js/mBss.handler.js',
+            // 'spec/*/*.js'
         ],
 
 

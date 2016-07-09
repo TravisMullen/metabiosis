@@ -128,31 +128,31 @@ var mBss = ( function() {
 
      * ========================================================================== */
 
-    // function queueHandler() {
+    function queueHandler() {
 
-    //     // add actions from event queue
+        // add actions from event queue
 
-    //     // if there are active actions pending
-    //     // don't queue any new ones
-    //     mbss.log( '__actionQueue set ', __actionQueue );
-    //     if ( __actionQueue.length ) {
-    //         mbss.log( 'we still got some actions to complete, skip a beat!' );
-    //     } else {
-    //         // if ( __eventQueue.length ) {
-    //             __actionQueue = __eventQueue.shift();
-    //         // } else {
-    //         //     mbss.log('thats it, show is over!');
-    //         //     return;
-    //         // }
-    //     }
+        // if there are active actions pending
+        // don't queue any new ones
+        mbss.log( '__actionQueue set ', __actionQueue );
+        if ( __actionQueue.length ) {
+            mbss.log( 'we still got some actions to complete, skip a beat!' );
+        } else {
+            // if ( __eventQueue.length ) {
+                __actionQueue = __eventQueue.shift();
+            // } else {
+            //     mbss.log('thats it, show is over!');
+            //     return;
+            // }
+        }
 
-    //     mbss.log( '__actionQueue ', __actionQueue );
+        mbss.log( '__actionQueue ', __actionQueue );
 
-    //     // if ( __readyHandler ) {
-    //     handleAction( __actionQueue );
-    //     // }
+        // if ( __readyHandler ) {
+        handleAction( __actionQueue );
+        // }
 
-    // }
+    }
 
     // BEAT
     // if events in queue, 
@@ -173,14 +173,17 @@ var mBss = ( function() {
             // mbss.log( rate/1000 + ' sec rate' );
 
         // if ( __eventQueue.length ) {
-            __HEART.BEAT = window.setTimeout( function() {
+        // 
+        // 
+        __HEART.BEAT = true;
+            // __HEART.BEAT = window.setTimeout( function() {
                 mbss.log( 'beating!', ++__HEART.COUNT );
 
                 // console.log("queueHandler",queueHandler);
                 
-                // queueHandler();
+                queueHandler();
 
-            }, rate );
+            // }, rate );
             // console.log("dropABeat __HEART.BEAT",__HEART.BEAT);
         // } else {
         //     mbss.log( 'show is over! *=========> ' );
@@ -276,225 +279,225 @@ var mBss = ( function() {
 
     // // HANDLER
 
-    // function handleAction() {
-    //     // __readyHandler = false;
+    function handleAction() {
+        // __readyHandler = false;
 
-    //     // to do :: make module
-    //     // split each CHECK POINT in seperate functions
+        // to do :: make module
+        // split each CHECK POINT in seperate functions
 
-    //     var target,
-    //         actionModel,
-    //         bindModel = {},
-    //         compiledAction,
-    //         boundAction;
+        var target,
+            actionModel,
+            bindModel = {},
+            compiledAction,
+            boundAction;
 
-    //     console.log( '__actionQueue', __actionQueue );
-    //     actionModel = __actionQueue[ 0 ];
-    //     console.log( 'actionModel', actionModel );
-    //     // check for valid object (model)
-    //     if ( typeof actionModel !== 'object' ) {
-    //         mbss.log( 'no action model for the handler!' );
-    //         return;
-    //     }
-
-
-    //     // SUBMIT 
-    //     // requires augmented data, otherwise use target w/ "default" action
-    //     // act on returned augmented target
-    //     if ( typeof actionModel.submit !== 'undefined' && ( __augmented && __augmented.length ) ) {
-
-    //         // set target to result's link
-    //         actionModel.target = __augmented[ 0 ].querySelector( '[href]' );
-
-    //         mbss.log( 'submit using augmented data from last action', actionModel.target );
-    //         // actionModel.subtarget = actionModel.submit;
-
-    //         clickSyth( actionModel.target );
-    //         __augmented = []; //reset
-
-    //         return; // break;
-    //     }
-
-    //     // VALIDATE 
-    //     // if validate, act on returned augmented target
-    //     if ( typeof actionModel.validate === 'string' ) {
-    //         mbss.log( 'validate!' );
-    //         actionModel.target = actionModel.validate;
-    //     }
+        console.log( '__actionQueue', __actionQueue );
+        actionModel = __actionQueue[ 0 ];
+        console.log( 'actionModel', actionModel );
+        // check for valid object (model)
+        if ( typeof actionModel !== 'object' ) {
+            mbss.log( 'no action model for the handler!' );
+            return;
+        }
 
 
+        // SUBMIT 
+        // requires augmented data, otherwise use target w/ "default" action
+        // act on returned augmented target
+        if ( typeof actionModel.submit !== 'undefined' && ( __augmented && __augmented.length ) ) {
 
-    //     // TARGET (set by user or result from processed augmented data)
-    //     // if valid taget, save as key and set the query as the target
-    //     // if no target, bypass
-    //     if ( typeof actionModel.target === 'string' ) {
+            // set target to result's link
+            actionModel.target = __augmented[ 0 ].querySelector( '[href]' );
 
-    //         // if 'body', bypass querySelector
-    //         actionModel.selector = actionModel.target;
-    //         if ( actionModel.target.indexOf( 'body' ) === 0 ) {
-    //             target = [ document.body ];
-    //         } else {
-    //             target = document.querySelectorAll( actionModel.selector );
-    //         }
+            mbss.log( 'submit using augmented data from last action', actionModel.target );
+            // actionModel.subtarget = actionModel.submit;
 
-    //         // check target, cause lets not proceed if its not valid
-    //         if ( !target ) {
-    //             // if no target, maybe the DOM is still loading, 
-    //             // queue fail check to try again
-    //             failedCheck( actionModel );
-    //             return;
-    //         }
-    //     }
+            clickSyth( actionModel.target );
+            __augmented = []; //reset
 
-    //     // ACTION
-    //     // confirm action function
-    //     // if not define, make it check for a valid target to click
-    //     if ( typeof actionModel.action !== 'function' ) {
-    //         actionModel.action = function( target ) {
-    //             mbss.log( 'default: true - target.length', target.length );
-    //             return target.length > 0;
-    //         };
-    //     }
+            return; // break;
+        }
 
-    //     // SUBTARGET // for access to `__augmented` data in `actionModel.action`
-    //     // is subtarget/ alter target to be subtarget, 
-    //     // and its action should already be expecting the augmented as 2nd arg
-    //     if ( typeof actionModel.subtarget === 'string' ) {
-
-    //         // if the last target returned empty then nothing else left to do
-    //         if ( typeof __augmented === 'undefined' || __augmented.length === 0 ) {
-    //             failedCheck( actionModel );
-    //             return;
-    //         }
-
-    //         actionModel.selector = actionModel.subtarget;
-
-    //         target = document.querySelectorAll( actionModel.selector );
-
-    //         // check target, cause lets not proceed if its not valid
-    //         if ( !target ) {
-    //             // if no target, maybe the DOM is still loading, 
-    //             // queue fail check to try again
-    //             failedCheck( actionModel );
-    //             return;
-    //         // } else {
-
-    //         }
-    //         //     // augmented target // other attribs
-    //         //     // no click event cause its a subtarget so return that ish right here.
-    //         //     // return actionModel.action(target, augmented);
-    //         //     actionModel.action(target, __augmented[actionModel.target]);
-    //     }
+        // VALIDATE 
+        // if validate, act on returned augmented target
+        if ( typeof actionModel.validate === 'string' ) {
+            mbss.log( 'validate!' );
+            actionModel.target = actionModel.validate;
+        }
 
 
 
-    //     // if ( option ) {
-    //     // if fails, return last match (to augmented)?
-    //     // }
+        // TARGET (set by user or result from processed augmented data)
+        // if valid taget, save as key and set the query as the target
+        // if no target, bypass
+        if ( typeof actionModel.target === 'string' ) {
 
-    //     // action:
-    //     // true *-> continue to next action
-    //     // Array.length > 0 *-> coninue to next action, pass (augmented) array
-    //     // if === 0, (typeof number) treat as subtarget (no fired event?)
-    //     // false *-> try again (call event check or all to failed attempt queue?)
+            // if 'body', bypass querySelector
+            actionModel.selector = actionModel.target;
+            if ( actionModel.target.indexOf( 'body' ) === 0 ) {
+                target = [ document.body ];
+            } else {
+                target = document.querySelectorAll( actionModel.selector );
+            }
 
-    //     // return strings for insruction? [
-    //     // 'jumpToAction',
-    //     // 'jumpToLastAction',
-    //     // 'skipAction',
-    //     // 'repeatAction' // happens if falsy (when action is true only)
-    //     // 'ifFailed' only complete step is previous failed, is ignore step
-    //     // 'isSuccess' this is default, only process if previous returns a defined var
-    //     // 'submit' // fires click event on last returned augment
-    //     // ]
+            // check target, cause lets not proceed if its not valid
+            if ( !target ) {
+                // if no target, maybe the DOM is still loading, 
+                // queue fail check to try again
+                failedCheck( actionModel );
+                return;
+            }
+        }
 
-    //     mbss.log( 'try target', actionModel.selector );
+        // ACTION
+        // confirm action function
+        // if not define, make it check for a valid target to click
+        if ( typeof actionModel.action !== 'function' ) {
+            actionModel.action = function( target ) {
+                mbss.log( 'default: true - target.length', target.length );
+                return target.length > 0;
+            };
+        }
 
-    //     // send filtered model for access within action
+        // SUBTARGET // for access to `__augmented` data in `actionModel.action`
+        // is subtarget/ alter target to be subtarget, 
+        // and its action should already be expecting the augmented as 2nd arg
+        if ( typeof actionModel.subtarget === 'string' ) {
 
-    //     // set tools 
+            // if the last target returned empty then nothing else left to do
+            if ( typeof __augmented === 'undefined' || __augmented.length === 0 ) {
+                failedCheck( actionModel );
+                return;
+            }
 
-    //     bindModel._bios = __config.tools;
-    //     // set config info
-    //     bindModel._config = actionModel.$$config;
-    //     // set attempt info
-    //     bindModel._attempts = __failed;
-    //     if ( ( __failed + 1 ) === ( actionModel.attempts || mbss.maxFailedAttempts ) ) {
-    //         // for use within actions to do "last resort" functionality
-    //         bindModel._lastAttempt = true;
-    //     }
+            actionModel.selector = actionModel.subtarget;
 
-    //     boundAction = actionModel.action.bind( bindModel ); // bind current scope for fn and data access
-    //     try {
-    //         // call and pass `targat` and `augmented` for subtarget
-    //         compiledAction = boundAction( target, __augmented );
-    //     } catch ( e ) {
-    //         if ( e instanceof TypeError ) {
-    //             mbss.log( 'TypeError with Action', e );
-    //             // statements to handle TypeError exceptions
-    //         } else if ( e instanceof RangeError ) {
-    //             mbss.log( 'RangeError with Action', e );
-    //             // statements to handle RangeError exceptions
-    //         } else if ( e instanceof EvalError ) {
-    //             mbss.log( 'EvalError with Action', e );
-    //             // statements to handle EvalError exceptions
-    //         } else {
-    //             // statements to handle any unspecified exceptions
-    //             mbss.log( 'Error with Action', e );
-    //             // maybe we should splice it out
-    //         }
+            target = document.querySelectorAll( actionModel.selector );
 
-    //         // this errorored, it should be removed
-    //     }
+            // check target, cause lets not proceed if its not valid
+            if ( !target ) {
+                // if no target, maybe the DOM is still loading, 
+                // queue fail check to try again
+                failedCheck( actionModel );
+                return;
+            // } else {
 
-    //     mbss.log( 'typeof compiledAction ', typeof compiledAction );
-    //     // mbss.log("compiled after call",compiled);
-    //     if ( typeof compiledAction === 'undefined' ) { // check for null or NaN?
-    //         mbss.log( 'action was bad... removing action' );
-    //         removeAction(); // remove and move cause it aint getting any better
-    //         return;
-    //     }
-
-    //     // an evaluator had no results, move on to next action in queue
-    //     if ( compiledAction.length === 0 ) {
-    //         // if () {
-
-    //         // }
-    //         removeAction();
-    //         return;
-    //     }
-
-    //     if ( compiledAction === false ) { // false!
-    //         failedCheck( actionModel );
-    //         return;
-    //     }
+            }
+            //     // augmented target // other attribs
+            //     // no click event cause its a subtarget so return that ish right here.
+            //     // return actionModel.action(target, augmented);
+            //     actionModel.action(target, __augmented[actionModel.target]);
+        }
 
 
-    //     mbss.log( 'compiledAction', compiledAction );
 
-    //     // if validate then remove cause task is complete, time to do `core`
-    //     if ( compiledAction && actionModel.validate ) {
-    //         removeAction();
-    //         return;
-    //     }
+        // if ( option ) {
+        // if fails, return last match (to augmented)?
+        // }
 
-    //     // if we are returning some augmented data
-    //     // save it
-    //     // and if (not) a submit action
-    //     if ( compiledAction.length >= 1 && !actionModel.submit ) {
-    //         // returning arrays means we queuing up a subtarget, no click for you.
-    //         __augmented = compiledAction;
-    //         // move on to next action
-    //         removeAction();
-    //     } else {
-    //         // if is valid taget and not out of attempts
-    //         // if nothing else fails... its time to be clicked
-    //         // if (this.active.event.pathType !== 'validate') {
-    //         clickSyth( target );
-    //         // }
-    //     }
+        // action:
+        // true *-> continue to next action
+        // Array.length > 0 *-> coninue to next action, pass (augmented) array
+        // if === 0, (typeof number) treat as subtarget (no fired event?)
+        // false *-> try again (call event check or all to failed attempt queue?)
 
-    // }
+        // return strings for insruction? [
+        // 'jumpToAction',
+        // 'jumpToLastAction',
+        // 'skipAction',
+        // 'repeatAction' // happens if falsy (when action is true only)
+        // 'ifFailed' only complete step is previous failed, is ignore step
+        // 'isSuccess' this is default, only process if previous returns a defined var
+        // 'submit' // fires click event on last returned augment
+        // ]
+
+        mbss.log( 'try target', actionModel.selector );
+
+        // send filtered model for access within action
+
+        // set tools 
+
+        bindModel._bios = __config.tools;
+        // set config info
+        bindModel._config = actionModel.$$config;
+        // set attempt info
+        bindModel._attempts = __failed;
+        if ( ( __failed + 1 ) === ( actionModel.attempts || mbss.maxFailedAttempts ) ) {
+            // for use within actions to do "last resort" functionality
+            bindModel._lastAttempt = true;
+        }
+
+        boundAction = actionModel.action.bind( bindModel ); // bind current scope for fn and data access
+        try {
+            // call and pass `targat` and `augmented` for subtarget
+            compiledAction = boundAction( target, __augmented );
+        } catch ( e ) {
+            if ( e instanceof TypeError ) {
+                mbss.log( 'TypeError with Action', e );
+                // statements to handle TypeError exceptions
+            } else if ( e instanceof RangeError ) {
+                mbss.log( 'RangeError with Action', e );
+                // statements to handle RangeError exceptions
+            } else if ( e instanceof EvalError ) {
+                mbss.log( 'EvalError with Action', e );
+                // statements to handle EvalError exceptions
+            } else {
+                // statements to handle any unspecified exceptions
+                mbss.log( 'Error with Action', e );
+                // maybe we should splice it out
+            }
+
+            // this errorored, it should be removed
+        }
+
+        mbss.log( 'typeof compiledAction ', typeof compiledAction );
+        // mbss.log("compiled after call",compiled);
+        if ( typeof compiledAction === 'undefined' ) { // check for null or NaN?
+            mbss.log( 'action was bad... removing action' );
+            removeAction(); // remove and move cause it aint getting any better
+            return;
+        }
+
+        // an evaluator had no results, move on to next action in queue
+        if ( compiledAction.length === 0 ) {
+            // if () {
+
+            // }
+            removeAction();
+            return;
+        }
+
+        if ( compiledAction === false ) { // false!
+            failedCheck( actionModel );
+            return;
+        }
+
+
+        mbss.log( 'compiledAction', compiledAction );
+
+        // if validate then remove cause task is complete, time to do `core`
+        if ( compiledAction && actionModel.validate ) {
+            removeAction();
+            return;
+        }
+
+        // if we are returning some augmented data
+        // save it
+        // and if (not) a submit action
+        if ( compiledAction.length >= 1 && !actionModel.submit ) {
+            // returning arrays means we queuing up a subtarget, no click for you.
+            __augmented = compiledAction;
+            // move on to next action
+            removeAction();
+        } else {
+            // if is valid taget and not out of attempts
+            // if nothing else fails... its time to be clicked
+            // if (this.active.event.pathType !== 'validate') {
+            clickSyth( target );
+            // }
+        }
+
+    }
 
 
 
@@ -650,6 +653,8 @@ var mBss = ( function() {
             dropABeat( c );
         }
     };
+
+    mbss.next = 
 
     mbss.kill = function() {
         console.log("mbss.spec.eventQueue.length",mbss.spec.eventQueue.length);

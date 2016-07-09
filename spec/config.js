@@ -2,6 +2,17 @@
 'use strict';
 var figgy = ( function setConfig() {
     var scope = {},
+        helpers = {
+            filterKey : function ( name ) {
+                var key = '';
+                if ( name !== undefined ) {
+                    key = name;
+                    key = key.replace( /[^a-zA-Z0-9]/g, '' ); // remove all non-alphas and non-number
+                    key = key.toLowerCase();
+                }
+                return key;
+            }
+        }, // end tools
         paths = {
             hats : [ {
                     target : '[href$="shop/all"]',
@@ -394,6 +405,7 @@ var figgy = ( function setConfig() {
 
     scope.paths = paths;
     scope.items = items;
+    scope.helpers = helpers;
 
     return scope;
 } )();
