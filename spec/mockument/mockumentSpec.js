@@ -34,8 +34,8 @@ describe('Mockument', function() {
 
         data = [{
             type: 'div',
-            // id: 'mockument',
-            id: 'turd',
+            id: 'mockument',
+            // id: 'turd',
             classes: ['foo-class', 'bar-class', 'spec-testing']
         }, {
             type: 'ul',
@@ -48,13 +48,13 @@ describe('Mockument', function() {
         }, {
             type: 'li',
             text: 'Gochujang.',
-            // id: 'gochJawn',
+            id: 'gochJawn',
             target: '.mock-list-for-testing'
         }, {
             type: 'h1',
             id: 'headerJawn',
             target: '.foo-class.bar-class',
-            // targetId: 'gochJawn',
+            targetId: 'gochJawn',
             text: 'This is a list to test against!',
             classes: ['red', 'white', 'blue', 'spec-testing']
         }];
@@ -97,28 +97,40 @@ describe('Mockument', function() {
         });
         it('add multiple elements to DOM', function() {
             var inspection,
+                activeElements,
+                test,
                 // test by id
-                selector = '#' + data[0].id;
+                selector = 'body';
 
             // shouldn't exist yet
             inspection = document.querySelector( selector );
-            console.log("inspection",inspection);
-            expect(inspection).toBeNull();
+            // expect(inspection).toBeNull();
 
             // add it!
             service.build( data );
 
             // how should exist!
             inspection = document.querySelector( selector );
-            console.log("inspection",inspection);
-            console.log("inspection.innerHTML",inspection.innerHTML);
-
             expect(inspection).toBeDefined();
 
-            for (var i = data.length - 1; i >= 0; i--) {
-                expect(inspection).toBeDefined();
+            // validate against service
+            activeElements = Object.keys(service.active);
+            for (var i = 0; i < activeElements.length; i++) {
+                expect( inspection.innerHTML.indexOf(activeElements[i]) ).toBeGreaterThan( -1 );
             }
-            // expect(inspection.id).toBe(elm.id);
+
+            // validate against real data
+            activeElements = Object.keys(service.active);
+            for (var i = 0; i < data.length; i++) {
+                test = data[i].id || false;
+                if (!test) {
+                    test = data[i].classes && data[i].classes[0] ? data[i].classes[0] : false;
+                }
+                if (!test) {
+                    test = data[i].text;
+                }
+                expect( inspection.innerHTML.indexOf( test ) ).toBeGreaterThan( -1 );
+            }
         });
         // it('maintain active list', function() {
 

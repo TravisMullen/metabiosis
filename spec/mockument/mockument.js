@@ -3,10 +3,11 @@
 var mockument = (function defineMockument() {
 
     var mockdoc = {},
+        active = {},
+
         count = 0,
         prefix = 'mock-element-',
-        active = {},
-        // activeHash = {},
+
         defaultElementMap = [{
             type: 'div',
             id: 'mockument',
@@ -125,6 +126,15 @@ var mockument = (function defineMockument() {
         }
     }
 
+    function updateActive( innerHTML ) {
+        var elementId;
+        for (elementId in active) {
+            if ( innerHTML.indexOf(elementId) >= 0 ) {
+                delete active[ elementId ];
+            }
+        }
+    }
+    
     function removeElement( elementId ) {
         var body,
             temp,
@@ -137,32 +147,12 @@ var mockument = (function defineMockument() {
         if ( temp ) {
             body = document.querySelector( 'body' );
             success = body.removeChild( temp );
-            console.log("success",success);
-            updateActive(success.innerHTML);
+            if ( success.innerHTML ) {
+                updateActive( success.innerHTML );
+            }
         }
     }
 
-    function updateActive( innerHTML ) {
-        var elementId;
-        console.log("updateActive innerHTML",innerHTML);
-        for (elementId in active) {
-            console.log("elementId",elementId);
-            console.log("innerHTML.indexOf(elementId) ",innerHTML.indexOf(elementId) );
-            if ( innerHTML.indexOf(elementId) >= 0 ) {
-                console.log("DELETING active[ elementId ].id",active[ elementId ].id);
-                delete active[ elementId ];
-            }
-        }
-        // var elementId,
-        //     temp;
-        // for (elementId in active) {
-        //     temp = document.getElementById( elementId );
-        //     if ( temp === null ) {
-        //         delete active[ elementId ];
-        //     }
-        // }
-        // return active;
-    }
 
     function removeAll() {
         var elementId;
@@ -186,7 +176,7 @@ var mockument = (function defineMockument() {
 
     mockdoc.build = function( elementMap ) {
         if ( elementMap ) {
-            build(elementMap);
+            build( elementMap );
         } else {
             build( defaultElementMap );
         }
