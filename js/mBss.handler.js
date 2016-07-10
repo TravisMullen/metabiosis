@@ -113,20 +113,23 @@ var mBss = ( function( mbss ) {
         }
 
 
+            console.log("actionModel.target",actionModel.target);
 
         // TARGET (set by user or result from processed augmented data)
         // if valid taget, save as key and set the query as the target
         // if no target, bypass
+        console.log("typeof actionModel.target === 'string'",typeof actionModel.target === 'string');
         if ( typeof actionModel.target === 'string' ) {
 
             // if 'body', bypass querySelector
             actionModel.selector = actionModel.target;
+            console.log("actionModel.target",actionModel.selector);
             if ( actionModel.target.indexOf( 'body' ) === 0 ) {
                 target = [ document.body ];
             } else {
                 target = document.querySelectorAll( actionModel.selector );
             }
-
+            console.log("actionModel.target",target);
             // check target, cause lets not proceed if its not valid
             if ( !target ) {
                 // if no target, maybe the DOM is still loading, 
@@ -136,6 +139,7 @@ var mBss = ( function( mbss ) {
             }
         }
 
+        console.log("document.querySelector('body').innerHTML",document.querySelector('#items-to-test').innerHTML);
         // ACTION
         // confirm action function
         // if not define, make it check for a valid target to click
@@ -292,14 +296,14 @@ var mBss = ( function( mbss ) {
 
     // should be external 
     mbss.log = function( message, variable ) {
-        if ( mbss.devMode ) {
+        // if ( mbss.devMode ) {
             if ( variable ) {
                 console.log( message, variable );
             } else {
                 console.log( message );
             }
             return false;
-        }
+        // }
     };
 
     // exported 

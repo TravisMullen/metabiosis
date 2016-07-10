@@ -6,47 +6,48 @@ var mockument = (function defineMockument() {
         active = {},
 
         count = 0,
+        // prefix = 'mockElement_',
         prefix = 'mock-element-',
 
         defaultElementMap = [{
             type: 'div',
             id: 'mockument',
-            classes: ['foo','bar']
+            classes: ['foo', 'bar']
         }, {
             type: 'ul',
             targetId: 'mockument',
-            classes: ['mock-list-for-testing','some-additional-class']
-        },{
-            type: 'h1',
-            id: 'headerJawn',
-            target: '.foo.bar',
-            text: 'This is a list to test against!',
-            classes: ['red','white','blue']
+            classes: ['mock-list-for-testing', 'some-additional-class']
         }, {
             type: 'li',
             text: 'kitsch.',
             target: '.mock-list-for-testing'
-        },{
+        }, {
             type: 'li',
             text: 'Gochujang.',
             id: 'gochJawn',
             target: '.mock-list-for-testing'
-        },{
+        }, {
             type: 'li',
             text: 'cornhole.',
             target: '.mock-list-for-testing'
-        },{
+        }, {
             type: 'li',
             text: 'knausgaard.',
             target: '.mock-list-for-testing'
-        },{
+        }, {
             type: 'li',
             text: 'chartreuse.',
             target: '.mock-list-for-testing'
-        },{
+        }, {
             type: 'li',
             text: 'mlkshk keffiyeh.',
             target: '.mock-list-for-testing'
+        }, {
+            type: 'h1',
+            id: 'headerJawn',
+            target: '.foo.bar',
+            text: 'Mockument is working!',
+            classes: ['red', 'white', 'blue']
         }];
 
     // should this be a contructor 
@@ -56,12 +57,12 @@ var mockument = (function defineMockument() {
         elm.type = model.type || 'div';
 
         //giving each an ID for testing and memory management
-        elm.id = model.id || ( prefix + (++count) ); 
+        elm.id = model.id || (prefix + (++count));
 
-        if ( active[ elm.id ] ) {
+        if (active[elm.id]) {
             elm.id = elm.id + '-dup';
         }
-        console.log("elm.id",elm.id);
+        // console.log("elm.id",elm.id);
 
         elm.text = model.text || false;
         elm.classes = model.classes && model.classes.length ? model.classes : [];
@@ -69,6 +70,12 @@ var mockument = (function defineMockument() {
         elm.targetId = model.targetId || false;
         // dont set target if there is a target id
         elm.target = model.target && elm.targetId === false ? model.target : false;
+
+
+        elm.href = model.href || false;
+        if (elm.href) {
+            model.type = 'a';
+        }
 
         return elm;
     }
@@ -87,14 +94,18 @@ var mockument = (function defineMockument() {
         // 
         elm = document.createElement(config.type);
         // set id
-        if ( config.id ) {
-            elm.setAttribute('id',config.id)
+        if (config.id) {
+            elm.setAttribute('id', config.id)
         }
 
-        if ( config.classes && config.classes.length ) {
+        if (config.classes && config.classes.length) {
             for (var i = config.classes.length - 1; i >= 0; i--) {
-                elm.classList.add( config.classes[i] );
+                elm.classList.add(config.classes[i]);
             }
+        }
+
+        if (config.href) {
+            elm.setAttribute('href', config.href);
         }
 
         if (config.text) {
@@ -111,7 +122,7 @@ var mockument = (function defineMockument() {
             // add the newly created element and its content into the DOM 
             target = document.querySelector(config.target);
         }
-        
+
 
         if (target) {
             success = target.appendChild(elm);
@@ -123,33 +134,39 @@ var mockument = (function defineMockument() {
         if (success) {
             // active.push(success.id);
             active[success.id] = { id: success.id };
+            return success.id;
         }
     }
 
-    function updateActive( innerHTML ) {
+    function updateActive(innerHTML) {
         var elementId;
         for (elementId in active) {
-            if ( innerHTML.indexOf(elementId) >= 0 ) {
-                delete active[ elementId ];
+            if (innerHTML.indexOf(elementId) >= 0) {
+                delete active[elementId];
             }
         }
+
+        // if ( Object.keys(active).length === 0 ) {
+        //     count = 0;
+        // }
     }
-    
-    function removeElement( elementId ) {
+
+    function removeElement(elementId) {
         var body,
             temp,
             success,
             id = elementId.id || elementId;
 
-        temp = document.getElementById( id );
-        delete active[ id ];
+        temp = document.getElementById(id);
+        delete active[id];
 
-        if ( temp ) {
-            body = document.querySelector( 'body' );
-            success = body.removeChild( temp );
-            if ( success.innerHTML ) {
-                updateActive( success.innerHTML );
+        if (temp) {
+            body = document.querySelector('body');
+            success = body.removeChild(temp);
+            if (success && success.innerHTML) {
+                updateActive(success.innerHTML);
             }
+            return success.id;
         }
     }
 
@@ -157,28 +174,39 @@ var mockument = (function defineMockument() {
     function removeAll() {
         var elementId;
         for (elementId in active) {
-            removeElement( elementId );
+            removeElement(elementId);
         }
     }
 
     function build(elementMap) {
         for (var i = 0; i < elementMap.length; i++) {
-            addElement( elementMap[i] );
+            addElement(elementMap[i]);
         }
     }
 
+    // fns
+    // 
+
+    function embedTestJS(script) {
+        var link;
+        link = document.createElement('a');
+        link.setAttribute('href', 'javascript:' + script + '');
+        return link;
+    }
+
     mockdoc.add = addElement;
+    mockdoc.remove = removeElement;
     mockdoc.removeAll = removeAll;
 
     mockdoc.prefix = prefix;
     mockdoc.active = active;
 
 
-    mockdoc.build = function( elementMap ) {
-        if ( elementMap ) {
-            build( elementMap );
+    mockdoc.build = function(elementMap) {
+        if (elementMap) {
+            build(elementMap);
         } else {
-            build( defaultElementMap );
+            build(defaultElementMap);
         }
     };
 
