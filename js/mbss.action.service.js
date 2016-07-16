@@ -98,11 +98,18 @@ var mBss = (function(mbss) {
         return true;
     }
 
+    function removeAction(action) {
+        failedCount = 0; //reset count
+        // __augmented = undefined;
+        // this will be overridden in the events service
+        return action;
+    }
+
     function failAction(action) {
         if (failedAction === action) {
             ++failedCount;
             if (failedCount >= failedMax) {
-                completeAction(action);
+                removeAction(action);
             }
         }
     }
@@ -128,40 +135,13 @@ var mBss = (function(mbss) {
             bindModel = {},
             compiledAction,
             boundAction;
-
+            console.log("__augmented",__augmented);
 
         // check for valid object (model)
         if (typeof actionModel !== 'object') {
             mbss.log('no action model for the handler!');
             return status.fail;
         }
-
-
-        // SUBMIT 
-        // requires augmented data, otherwise use target w/ "default" action
-        // act on returned augmented target
-        if (typeof actionModel.submit !== 'undefined' && (__augmented && __augmented.length)) {
-
-            // set target to result's link
-            actionModel.target = __augmented[0].querySelector('[href]');
-
-            mbss.log('submit using augmented data from last action', actionModel.target);
-            // actionModel.subtarget = actionModel.submit;
-
-            executeAction( actionModel.target );
-            __augmented = []; //reset
-            mbss.log('submit is defined, action executed');
-            return status.success; // break;
-        }
-
-        // VALIDATE 
-        // if validate, act on returned augmented target
-        if (typeof actionModel.validate === 'string') {
-            mbss.log('validate!');
-            actionModel.target = actionModel.validate;
-        }
-
-
 
         // TARGET (set by user or result from processed augmented data)
         // if valid taget, save as key and set the query as the target
@@ -186,40 +166,28 @@ var mBss = (function(mbss) {
                 mbss.log('target not valid, failing action');
                 return status.fail;
             }
+        } else {
+            if ( __augmented === undefined ) {
+                removeAction(actionModel);
+                mbss.log('not valid target NOR previous augmented');
+                return status.remove;
+            }
         }
 
-        // console.log("document.querySelector('body').innerHTML",document.querySelector('#items-to-test').innerHTML);
         // ACTION
         // confirm action function
         // if not define, make it check for a valid target to click
+        // 
+        // not here, you in thoery could have 
+        // no specified target AND no specified action and still pass back the last augmented
+        // this is to keep events from breaking if there is a invalid action item
         if (typeof actionModel.action !== 'function') {
             actionModel.action = function(target) {
-                mbss.log('default: true - target.length', target.length);
-                return target.length > 0;
+                mbss.log('No valid action, but you do have a valid target!', target);
+                // return the target results to pass onto next action
+                return target;
             };
         }
-
-        // SUBTARGET // for access to `__augmented` data in `actionModel.action`
-        // is subtarget/ alter target to be subtarget, 
-        // and its action should already be expecting the augmented as 2nd arg
-        // 
-        console.log("actionModel.subtarget", actionModel.subtarget);
-
-        // TODO :: make this boolean as the subtarget selector is not needed
-
-        if (actionModel.subtarget) {
-            // if ( typeof actionModel.subtarget === 'string' ) {
-
-            // if the last target returned empty then nothing else left to do
-            if (typeof __augmented === 'undefined' || __augmented.length === 0) {
-                failAction(actionModel);
-                mbss.log('no augmented items, fail subtarget action');
-                return status.fail;
-            }
-
-            actionModel.selector = 'is a subtarget';
-        }
-
 
 
         // if ( option ) {
@@ -248,7 +216,7 @@ var mBss = (function(mbss) {
 
         // set tools 
 
-        bindModel.$tools = actionModel.helpers;
+        bindModel.$tools = actionModel.helpers || {};
         // set config info
         // console.log("var",var);
         // 
@@ -286,18 +254,14 @@ var mBss = (function(mbss) {
         mbss.log('typeof compiledAction ', typeof compiledAction);
         // mbss.log("compiled after call",compiled);
         if (typeof compiledAction === 'undefined') { // check for null or NaN?
-            mbss.log('action was bad... removing action');
-            completeAction(); // remove and move cause it aint getting any better
+            removeAction(); // remove and move cause it aint getting any better
             mbss.log('not valid action function, complete (to be removed)');
             return status.remove;
         }
 
         // an evaluator had no results, move on to next action in queue
-        if (compiledAction.length === 0) {
-            // if () {
-
-            // }
-            completeAction();
+        if (compiledAction.length <= 0) {
+            removeAction();
             mbss.log('not items found, complete to be removed as it had items to parse but found no matches');
             return status.remove;
         }
@@ -311,34 +275,12 @@ var mBss = (function(mbss) {
 
         mbss.log('compiledAction', compiledAction.length || compiledAction);
 
-        // if validate then remove cause task is complete, time to do `core`
-        if (compiledAction && actionModel.validate) {
-            completeAction();
-            mbss.log('if was a validation tast, complete for removed and do not execute action (click)');
-            return status.remove;
-        }
-
-        // if we are returning some augmented data
-        // save it
-        // and if (not) a submit action
-        if (compiledAction.length >= 1 && !actionModel.submit) {
-            // returning arrays means we queuing up a subtarget, no click for you.
-            __augmented = compiledAction;
-            // move on to next action
-            completeAction();
-            mbss.log('has augmetmented (' + __augmented.length + '), complete and move on to next action');
-            return status.success;
-        } else {
-            // if is valid target and not out of attempts
-            // if nothing else fails... its time to be clicked
-            // if (this.active.event.pathType !== 'validate') {
-            executeAction(target);
-            mbss.log('only one augmented (' + __augmented.length + '), so found be the needle, execute action');
-            // return 'only one augmented (' + __augmented.length + '), so found be the needle, execute action';
-            return status.execute;
-            // }
-        }
-
+        // why be biased about the results. if they defined then return them. \
+        // assumed to be compiledAction.length > 1;
+        // 
+        // return results
+        __augmented = compiledAction;
+        return __augmented;
     }
 
     mbss.handleAction = handleAction;

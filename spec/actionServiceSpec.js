@@ -182,8 +182,8 @@ describe('Metabiosis Actions', function() {
             }
         }, {
             // filtered,
-            // subtarget: '.item-for-sale h1',
-            subtarget: true,
+            // target: '.item-for-sale h1',
+            // target: true,
             action: function(target, augmentedParent) {
                 var augmented = [],
                     fkey = this.$tools.filterKey(this.$config.key),
@@ -206,7 +206,7 @@ describe('Metabiosis Actions', function() {
             }
         }, {
             // filtered,
-            subtarget: true,
+            // target: true,
             action: function(target, augmentedParent) {
                 var augmented = [],
                     fkey = this.$tools.filterKey(this.$config.size),
@@ -233,7 +233,7 @@ describe('Metabiosis Actions', function() {
             }
         }, {
             // filtered,
-            subtarget: true,
+            // target: true,
             action: function(target, augmentedParent) {
                 var augmented = [],
                     fkey = this.$tools.filterKey(this.$config.style),
@@ -261,7 +261,7 @@ describe('Metabiosis Actions', function() {
         }, {
             // filtered,
             // submit: true,
-            subtarget: true,
+            // target: true,
             action: function(target, augmentedParent) {
                 var t = augmentedParent[0].querySelector('[href]');
                 console.log("click!",t);

@@ -15,11 +15,17 @@ module.exports = function(config) {
 
             // mockument
             'spec/mockument/mockument.js',
-            // 'spec/mockument/mockumentSpec.js',
+            // 'spec/mockument/mockumentSpec.js'
 
             // Metabiosis // mBss
-            'js/action.service.js',
-            'spec/*.js'
+            'js/mbss.action.service.js',
+
+
+            // spec config
+            'spec/config.js',
+
+            // spec tests
+            'spec/actionServiceSpec.js'
         ],
 
 
