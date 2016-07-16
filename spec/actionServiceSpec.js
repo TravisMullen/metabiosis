@@ -1,7 +1,7 @@
 /* globals figgy, mBss, mockument */
 // jscs:disable maximumLineLength
     'use strict';
-describe('Metabiosis // mBss', function() {
+describe('Metabiosis Actions', function() {
     var service,
         mockService,
         mockData,
@@ -296,6 +296,12 @@ describe('Metabiosis // mBss', function() {
         action.config = config.item;
 
         console.log("mockData.items.length", mockData.items.length);
+
+        // for ( var i = 0; i < config.path.length; i++ ) {
+        //     action = service.handleAction( config.path[ i ] );
+        //     console.log( i+' RESULT =====>', result );
+        //     expect( result ).toBeDefined();
+        // }
 
         result = service.handleAction(action);
         console.log("1 RESULT =====>", result);

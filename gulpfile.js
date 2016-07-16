@@ -170,10 +170,10 @@ gulp.task( 'test-lint', function() {
 gulp.task( 'test-style', function() {
 
     // clean that shit up!
-    gulp.src( './spec/*.js' )
-        .pipe( jscs({ fix : true }) )
-        .pipe( jscsStylish() )
-        .pipe( gulp.dest( './spec' ) );
+    // gulp.src( './spec/*.js' )
+    //     .pipe( jscs({ fix : true }) )
+    //     .pipe( jscsStylish() )
+    //     .pipe( gulp.dest( './spec' ) );
 
     gulp.src( './spec/*.js' )
         // .pipe( jscs({ fix : true }) )

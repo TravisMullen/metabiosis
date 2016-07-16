@@ -26,10 +26,10 @@ var mBss = (function(mbss) {
 
      * ========================================================================== */
     var status = {
-            failed: 'Event Failed',
-            complete: 'Event Completed',
-            execute: 'Executing Event Action (Click)'
-
+            fail: 'fail',
+            success: 'success',
+            remove: 'remove',
+            execute: 'execute'
         },
 
         failedMax = 2,
@@ -107,6 +107,16 @@ var mBss = (function(mbss) {
         }
     }
 
+    // function completeAction(action) {
+    //     var a = action || 'no action specified';
+
+    //     failedCount = 0; //reset count
+
+    //     // conplete action
+    //     console.log("completeAction remove or complete!", a);
+    //     return true;
+    // }
+
     function handleAction(actionModel) {
         // __readyHandler = false;
 
@@ -123,7 +133,7 @@ var mBss = (function(mbss) {
         // check for valid object (model)
         if (typeof actionModel !== 'object') {
             mbss.log('no action model for the handler!');
-            return 'not valid action model';
+            return status.fail;
         }
 
 
@@ -140,8 +150,8 @@ var mBss = (function(mbss) {
 
             executeAction( actionModel.target );
             __augmented = []; //reset
-
-            return 'submit is defined, action executed'; // break;
+            mbss.log('submit is defined, action executed');
+            return status.success; // break;
         }
 
         // VALIDATE 
@@ -173,7 +183,8 @@ var mBss = (function(mbss) {
                 // if no target, maybe the DOM is still loading, 
                 // queue fail check to try again
                 failAction(actionModel);
-                return 'target not valid, failing action';
+                mbss.log('target not valid, failing action');
+                return status.fail;
             }
         }
 
@@ -202,7 +213,8 @@ var mBss = (function(mbss) {
             // if the last target returned empty then nothing else left to do
             if (typeof __augmented === 'undefined' || __augmented.length === 0) {
                 failAction(actionModel);
-                return 'no augmented items, fail subtarget action';
+                mbss.log('no augmented items, fail subtarget action');
+                return status.fail;
             }
 
             actionModel.selector = 'is a subtarget';
@@ -276,7 +288,8 @@ var mBss = (function(mbss) {
         if (typeof compiledAction === 'undefined') { // check for null or NaN?
             mbss.log('action was bad... removing action');
             completeAction(); // remove and move cause it aint getting any better
-            return 'not valid action function, complete (to be removed)';
+            mbss.log('not valid action function, complete (to be removed)');
+            return status.remove;
         }
 
         // an evaluator had no results, move on to next action in queue
@@ -285,12 +298,14 @@ var mBss = (function(mbss) {
 
             // }
             completeAction();
-            return 'not items found, complete to be removed';
+            mbss.log('not items found, complete to be removed as it had items to parse but found no matches');
+            return status.remove;
         }
 
         if (compiledAction === false) { // false!
             failAction(actionModel);
-            return 'not items found, fail to be tried again or removed';
+            mbss.log('not items found, fail to be tried again');
+            return status.fail;
         }
 
 
@@ -299,7 +314,8 @@ var mBss = (function(mbss) {
         // if validate then remove cause task is complete, time to do `core`
         if (compiledAction && actionModel.validate) {
             completeAction();
-            return 'if was a validation tast, complete for removed and do not execute action (click)';
+            mbss.log('if was a validation tast, complete for removed and do not execute action (click)');
+            return status.remove;
         }
 
         // if we are returning some augmented data
@@ -310,13 +326,16 @@ var mBss = (function(mbss) {
             __augmented = compiledAction;
             // move on to next action
             completeAction();
-            return 'has augmetmented (' + __augmented.length + '), complete and move on to next action';
+            mbss.log('has augmetmented (' + __augmented.length + '), complete and move on to next action');
+            return status.success;
         } else {
             // if is valid target and not out of attempts
             // if nothing else fails... its time to be clicked
             // if (this.active.event.pathType !== 'validate') {
             executeAction(target);
-            return 'only one augmented (' + __augmented.length + '), so found be the needle, execute action';
+            mbss.log('only one augmented (' + __augmented.length + '), so found be the needle, execute action');
+            // return 'only one augmented (' + __augmented.length + '), so found be the needle, execute action';
+            return status.execute;
             // }
         }
 
