@@ -205,6 +205,12 @@ gulp.task( 'test-watch', function( done ) {
     }, done ).start();
 });
 
+gulp.task( 'test-watch-chrome', function( done ) {
+    return new Server({
+        configFile : __dirname + '/karma.conf.js',
+        browsers: ['Chrome']
+    }, done ).start();
+});
 // general tasks
 
 gulp.task( 'default', [ 'clean', 'watch' ] );

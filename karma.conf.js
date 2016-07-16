@@ -3,7 +3,9 @@ module.exports = function(config) {
     config.set({
         frameworks: ['jasmine'],
         reporters: ['spec'],
-        browsers: ['PhantomJS'],
+
+        // use Chrome cause Phanton doesnt have click events!
+        browsers: ['Chrome'],
 
         // browsers: ['PhantomJS','PhantomJS_custom'],
 
@@ -16,7 +18,7 @@ module.exports = function(config) {
             // 'spec/mockument/mockumentSpec.js',
 
             // Metabiosis // mBss
-            'js/mBss.handler.js',
+            'js/action.service.js',
             'spec/*.js'
         ],
 

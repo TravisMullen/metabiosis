@@ -1,6 +1,6 @@
 // jscs:disable maximumLineLength
 'use strict';
-var mockument = (function defineMockument() {
+var mockument = ( function defineMockument() {
 
     var mockdoc = {},
         active = {},
@@ -9,57 +9,57 @@ var mockument = (function defineMockument() {
         // prefix = 'mockElement_',
         prefix = 'mock-element-',
 
-        defaultElementMap = [{
-            type: 'div',
-            id: 'mockument',
-            classes: ['foo', 'bar']
+        defaultElementMap = [ {
+            type : 'div',
+            id : 'mockument',
+            classes : [ 'foo', 'bar' ]
         }, {
-            type: 'ul',
-            targetId: 'mockument',
-            classes: ['mock-list-for-testing', 'some-additional-class']
+            type : 'ul',
+            targetId : 'mockument',
+            classes : [ 'mock-list-for-testing', 'some-additional-class' ]
         }, {
-            type: 'li',
-            text: 'kitsch.',
-            target: '.mock-list-for-testing'
+            type : 'li',
+            text : 'kitsch.',
+            target : '.mock-list-for-testing'
         }, {
-            type: 'li',
-            text: 'Gochujang.',
-            id: 'gochJawn',
-            target: '.mock-list-for-testing'
+            type : 'li',
+            text : 'Gochujang.',
+            id : 'gochJawn',
+            target : '.mock-list-for-testing'
         }, {
-            type: 'li',
-            text: 'cornhole.',
-            target: '.mock-list-for-testing'
+            type : 'li',
+            text : 'cornhole.',
+            target : '.mock-list-for-testing'
         }, {
-            type: 'li',
-            text: 'knausgaard.',
-            target: '.mock-list-for-testing'
+            type : 'li',
+            text : 'knausgaard.',
+            target : '.mock-list-for-testing'
         }, {
-            type: 'li',
-            text: 'chartreuse.',
-            target: '.mock-list-for-testing'
+            type : 'li',
+            text : 'chartreuse.',
+            target : '.mock-list-for-testing'
         }, {
-            type: 'li',
-            text: 'mlkshk keffiyeh.',
-            target: '.mock-list-for-testing'
+            type : 'li',
+            text : 'mlkshk keffiyeh.',
+            target : '.mock-list-for-testing'
         }, {
-            type: 'h1',
-            id: 'headerJawn',
-            target: '.foo.bar',
-            text: 'Mockument is working!',
-            classes: ['red', 'white', 'blue']
-        }];
+            type : 'h1',
+            id : 'headerJawn',
+            target : '.foo.bar',
+            text : 'Mockument is working!',
+            classes : [ 'red', 'white', 'blue' ]
+        } ];
 
     // should this be a contructor 
-    function merge(model) {
+    function merge( model ) {
         var elm = {};
 
         elm.type = model.type || 'div';
 
         //giving each an ID for testing and memory management
-        elm.id = model.id || (prefix + (++count));
+        elm.id = model.id || ( prefix + ( ++count ) );
 
-        if (active[elm.id]) {
+        if ( active[ elm.id ] ) {
             elm.id = elm.id + '-dup';
         }
         // console.log("elm.id",elm.id);
@@ -73,76 +73,76 @@ var mockument = (function defineMockument() {
 
 
         elm.href = model.href || false;
-        if (elm.href) {
+        if ( elm.href ) {
             model.type = 'a';
         }
 
         return elm;
     }
 
-    function addElement(elmConfig) {
+    function addElement( elmConfig ) {
         var elm,
             config,
             content,
             success,
             target = false;
 
-        config = merge(elmConfig);
+        config = merge( elmConfig );
 
         // create a new div element 
         // and give it some content 
         // 
-        elm = document.createElement(config.type);
+        elm = document.createElement( config.type );
         // set id
-        if (config.id) {
-            elm.setAttribute('id', config.id)
+        if ( config.id ) {
+            elm.setAttribute( 'id', config.id )
         }
 
-        if (config.classes && config.classes.length) {
-            for (var i = config.classes.length - 1; i >= 0; i--) {
-                elm.classList.add(config.classes[i]);
+        if ( config.classes && config.classes.length ) {
+            for ( var i = config.classes.length - 1; i >= 0; i-- ) {
+                elm.classList.add( config.classes[ i ] );
             }
         }
 
-        if (config.href) {
-            elm.setAttribute('href', config.href);
+        if ( config.href ) {
+            elm.setAttribute( 'href', config.href );
         }
 
-        if (config.text) {
-            content = document.createTextNode(config.text);
-            elm.appendChild(content); //add the text node to the newly created div. 
+        if ( config.text ) {
+            content = document.createTextNode( config.text );
+            elm.appendChild( content ); //add the text node to the newly created div. 
         }
 
-        if (config.targetId) {
+        if ( config.targetId ) {
             // add the newly created element and its content into the DOM 
-            target = document.getElementById(config.targetId);
+            target = document.getElementById( config.targetId );
         }
 
-        if (config.target) {
+        if ( config.target ) {
             // add the newly created element and its content into the DOM 
-            target = document.querySelector(config.target);
+            target = document.querySelector( config.target );
         }
 
 
-        if (target) {
-            success = target.appendChild(elm);
+        if ( target ) {
+            success = target.appendChild( elm );
         } else {
-            success = document.body.appendChild(elm);
+            success = document.body.appendChild( elm );
         }
 
         // if added to DOM then maintain in active array
-        if (success) {
+        if ( success ) {
             // active.push(success.id);
-            active[success.id] = { id: success.id };
+            active[ success.id ] = { id : success.id };
             return success.id;
         }
     }
 
-    function updateActive(innerHTML) {
+    function updateActive( innerHTML ) {
         var elementId;
-        for (elementId in active) {
-            if (innerHTML.indexOf(elementId) >= 0) {
-                delete active[elementId];
+        for ( elementId in active ) {
+            if ( innerHTML.indexOf( elementId ) >= 0 ) {
+                delete active[ elementId ];
             }
         }
 
@@ -151,20 +151,20 @@ var mockument = (function defineMockument() {
         // }
     }
 
-    function removeElement(elementId) {
+    function removeElement( elementId ) {
         var body,
             temp,
             success,
             id = elementId.id || elementId;
 
-        temp = document.getElementById(id);
-        delete active[id];
+        temp = document.getElementById( id );
+        delete active[ id ];
 
-        if (temp) {
-            body = document.querySelector('body');
-            success = body.removeChild(temp);
-            if (success && success.innerHTML) {
-                updateActive(success.innerHTML);
+        if ( temp ) {
+            body = document.querySelector( 'body' );
+            success = body.removeChild( temp );
+            if ( success && success.innerHTML ) {
+                updateActive( success.innerHTML );
             }
             return success.id;
         }
@@ -173,24 +173,21 @@ var mockument = (function defineMockument() {
 
     function removeAll() {
         var elementId;
-        for (elementId in active) {
-            removeElement(elementId);
+        for ( elementId in active ) {
+            removeElement( elementId );
         }
     }
 
-    function build(elementMap) {
-        for (var i = 0; i < elementMap.length; i++) {
-            addElement(elementMap[i]);
+    function build( elementMap ) {
+        for ( var i = 0; i < elementMap.length; i++ ) {
+            addElement( elementMap[ i ] );
         }
     }
 
-    // fns
-    // 
-
-    function embedTestJS(script) {
+    function embedTestJS( script ) {
         var link;
-        link = document.createElement('a');
-        link.setAttribute('href', 'javascript:' + script + '');
+        link = document.createElement( 'a' );
+        link.setAttribute( 'href', 'javascript:' + script + '' );
         return link;
     }
 
@@ -202,15 +199,13 @@ var mockument = (function defineMockument() {
     mockdoc.active = active;
 
 
-    mockdoc.build = function(elementMap) {
-        if (elementMap) {
-            build(elementMap);
+    mockdoc.build = function( elementMap ) {
+        if ( elementMap ) {
+            build( elementMap );
         } else {
-            build(defaultElementMap);
+            build( defaultElementMap );
         }
     };
 
     return mockdoc;
 })();
-
-// mockument.build();

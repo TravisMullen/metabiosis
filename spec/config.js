@@ -3,7 +3,7 @@
 var figgy = ( function setConfig() {
     var scope = {},
         helpers = {
-            filterKey : function ( name ) {
+            filterKey : function( name ) {
                 var key = '';
                 if ( name !== undefined ) {
                     key = name;
@@ -11,6 +11,38 @@ var figgy = ( function setConfig() {
                     key = key.toLowerCase();
                 }
                 return key;
+            },
+            clickSyth : function( target, focus ) {
+                var canceled,
+                    elm = ( typeof target === 'string' ) ?
+                    document.querySelector( target ) :
+                    target,
+                    evt = new MouseEvent( 'click', {
+                        'view' : window,
+                        'button' : 0,
+                        'bubbles' : true,
+                        'cancelable' : true
+                    });
+
+                if ( elm === 'undefined' || elm === null ) {
+                    console.log( 'not valid target element' );
+                    return false;
+                }
+
+                canceled = !elm.dispatchEvent( evt );
+
+                if ( canceled ) {
+                    // A clickSyth called preventDefault.
+                    console.log( 'MouseEvent `click` canceled' );
+                } else {
+                    // None of the clickSyths called preventDefault.
+                    console.log( 'MouseEvent `click` NOT canceled' );
+                }
+                if ( focus ) {
+                    console.log( 'focus!' );
+                    elm.focus();
+                }
+                return canceled;
             }
         }, // end tools
         paths = {
@@ -408,4 +440,4 @@ var figgy = ( function setConfig() {
     scope.helpers = helpers;
 
     return scope;
-} )();
+})();
