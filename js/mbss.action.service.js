@@ -32,6 +32,7 @@ var mBss = (function(mbss) {
             execute: 'execute'
         },
 
+        // put this in an object to pass back with removed
         failedMax = 2,
         failedCount = 0,
         failedAction,
@@ -39,68 +40,13 @@ var mBss = (function(mbss) {
         // data passed back from the action functions
         __augmented;
 
-    // status = { status : 'active', success: undefined, failed: undefined };
-    function clickSyth(target, focus) {
-        console.log("target",target);
-        var canceled,
-            elm = (typeof target === 'string') ?
-            document.querySelector(target) :
-            target,
-            evt = new MouseEvent('click', {
-                'view': window,
-                'button': 0,
-                'bubbles': true,
-                'cancelable': true
-            });
-
-        console.log("elm",elm);
-        // elm.style.border = '1px solid #b368b3';
-        // elm.style.backgroundColor = '#800080';
-        // elm.style.color = '#32CD32';
-
-
-        canceled = !elm.dispatchEvent(evt);
-
-        if (canceled) {
-            // A clickSyth called preventDefault.
-            console.log('MouseEvent `click` canceled');
-        } else {
-            // None of the clickSyths called preventDefault.
-            console.log('MouseEvent `click` NOT canceled');
-        }
-        if (focus) {
-            console.log('focus!');
-            elm.focus();
-        }
-    }
-
-    function executeAction(target) {
-        var elm = target[0] || target;
-        // bind action to this function
-        // 
-        //  
-        if (elm) {
-
-            clickSyth( elm );
-        }
-        console.log("executeAction do action!", target[0] || target);
-        return true;
-    }
-
-    // remove
-    function completeAction(action) {
-        var a = action || 'no action specified';
-
-        failedCount = 0; //reset count
-
-        // conplete action
-        console.log("completeAction remove or complete!", a);
-        return true;
-    }
 
     function removeAction(action) {
+        // placeholder function for event service to map to
+        // so action service can call when finished
+        action.failedCount = failedCount;
         failedCount = 0; //reset count
-        // __augmented = undefined;
+        mbss.log("removeAction !", action);
         // this will be overridden in the events service
         return action;
     }
@@ -111,36 +57,25 @@ var mBss = (function(mbss) {
             if (failedCount >= failedMax) {
                 removeAction(action);
             }
+        } else {
+            failedAction = action;
+            failedCount = 1;
         }
+        mbss.log("failAction" + failedCount + " of " + failedMax);
     }
 
-    // function completeAction(action) {
-    //     var a = action || 'no action specified';
-
-    //     failedCount = 0; //reset count
-
-    //     // conplete action
-    //     console.log("completeAction remove or complete!", a);
-    //     return true;
-    // }
-
     function handleAction(actionModel) {
-        // __readyHandler = false;
-
-        // to do :: make module
-        // split each CHECK POINT in seperate functions
 
         var target,
-            // actionModel, // parse model?
             bindModel = {},
             compiledAction,
             boundAction;
-            console.log("__augmented",__augmented);
 
         // check for valid object (model)
         if (typeof actionModel !== 'object') {
             mbss.log('no action model for the handler!');
-            return status.fail;
+            mbss.removeAction(actionModel);
+            return status.remove;
         }
 
         // TARGET (set by user or result from processed augmented data)
@@ -168,7 +103,7 @@ var mBss = (function(mbss) {
             }
         } else {
             if ( __augmented === undefined ) {
-                removeAction(actionModel);
+                mbss.removeAction(actionModel);
                 mbss.log('not valid target NOR previous augmented');
                 return status.remove;
             }
@@ -212,13 +147,7 @@ var mBss = (function(mbss) {
 
         mbss.log('try target', actionModel.selector);
 
-        // send filtered model for access within action
-
-        // set tools 
-
         bindModel.$tools = actionModel.helpers || {};
-        // set config info
-        // console.log("var",var);
         // 
         bindModel.$config = actionModel.config || {};
         // set attempt info
@@ -254,14 +183,14 @@ var mBss = (function(mbss) {
         mbss.log('typeof compiledAction ', typeof compiledAction);
         // mbss.log("compiled after call",compiled);
         if (typeof compiledAction === 'undefined') { // check for null or NaN?
-            removeAction(); // remove and move cause it aint getting any better
+            mbss.removeAction(actionModel); // remove and move cause it aint getting any better
             mbss.log('not valid action function, complete (to be removed)');
             return status.remove;
         }
 
         // an evaluator had no results, move on to next action in queue
         if (compiledAction.length <= 0) {
-            removeAction();
+            mbss.removeAction(actionModel);
             mbss.log('not items found, complete to be removed as it had items to parse but found no matches');
             return status.remove;
         }
@@ -284,7 +213,13 @@ var mBss = (function(mbss) {
     }
 
     mbss.handleAction = handleAction;
+    mbss.removeAction = removeAction; // to be overridden by event handler
+
     mbss.active = __augmented;
+
+    // mbss.failedCount = failedCount;
+    // mbss.failedMax = failedMax;
+
 
     // should be external 
     mbss.log = function(message, variable) {

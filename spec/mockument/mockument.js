@@ -7,48 +7,49 @@ var mockument = ( function defineMockument() {
 
         count = 0,
         // prefix = 'mockElement_',
-        prefix = 'mock-element-',
+        prefix = 'mock-element-';
 
-        defaultElementMap = [ {
-            type : 'div',
-            id : 'mockument',
-            classes : [ 'foo', 'bar' ]
-        }, {
-            type : 'ul',
-            targetId : 'mockument',
-            classes : [ 'mock-list-for-testing', 'some-additional-class' ]
-        }, {
-            type : 'li',
-            text : 'kitsch.',
-            target : '.mock-list-for-testing'
-        }, {
-            type : 'li',
-            text : 'Gochujang.',
-            id : 'gochJawn',
-            target : '.mock-list-for-testing'
-        }, {
-            type : 'li',
-            text : 'cornhole.',
-            target : '.mock-list-for-testing'
-        }, {
-            type : 'li',
-            text : 'knausgaard.',
-            target : '.mock-list-for-testing'
-        }, {
-            type : 'li',
-            text : 'chartreuse.',
-            target : '.mock-list-for-testing'
-        }, {
-            type : 'li',
-            text : 'mlkshk keffiyeh.',
-            target : '.mock-list-for-testing'
-        }, {
-            type : 'h1',
-            id : 'headerJawn',
-            target : '.foo.bar',
-            text : 'Mockument is working!',
-            classes : [ 'red', 'white', 'blue' ]
-        } ];
+        // should remove default elm map?
+        // defaultElementMap = [ {
+        //     type : 'div',
+        //     id : 'mockument',
+        //     classes : [ 'foo', 'bar' ]
+        // }, {
+        //     type : 'ul',
+        //     targetId : 'mockument',
+        //     classes : [ 'mock-list-for-testing', 'some-additional-class' ]
+        // }, {
+        //     type : 'li',
+        //     text : 'kitsch.',
+        //     target : '.mock-list-for-testing'
+        // }, {
+        //     type : 'li',
+        //     text : 'Gochujang.',
+        //     id : 'gochJawn',
+        //     target : '.mock-list-for-testing'
+        // }, {
+        //     type : 'li',
+        //     text : 'cornhole.',
+        //     target : '.mock-list-for-testing'
+        // }, {
+        //     type : 'li',
+        //     text : 'knausgaard.',
+        //     target : '.mock-list-for-testing'
+        // }, {
+        //     type : 'li',
+        //     text : 'chartreuse.',
+        //     target : '.mock-list-for-testing'
+        // }, {
+        //     type : 'li',
+        //     text : 'mlkshk keffiyeh.',
+        //     target : '.mock-list-for-testing'
+        // }, {
+        //     type : 'h1',
+        //     id : 'headerJawn',
+        //     target : '.foo.bar',
+        //     text : 'Mockument is working!',
+        //     classes : [ 'red', 'white', 'blue' ]
+        // } ];
 
     // should this be a contructor 
     function merge( model ) {
@@ -99,9 +100,9 @@ var mockument = ( function defineMockument() {
         }
 
         if ( config.classes && config.classes.length ) {
-            for ( var i = config.classes.length - 1; i >= 0; i-- ) {
-                elm.classList.add( config.classes[ i ] );
-            }
+            config.classes.forEach(function( className ) {
+                elm.classList.add( className );
+            });
         }
 
         if ( config.href ) {
@@ -176,25 +177,33 @@ var mockument = ( function defineMockument() {
         for ( elementId in active ) {
             removeElement( elementId );
         }
+
     }
 
     function build( elementMap ) {
-        for ( var i = 0; i < elementMap.length; i++ ) {
-            addElement( elementMap[ i ] );
-        }
+        // if ( elementMap.length ) {
+        elementMap.forEach(function( element ) {
+            addElement( element );
+        });
+        // } else {
+        //     return false;
+        // }
     }
 
-    function embedTestJS( script ) {
-        var link;
-        link = document.createElement( 'a' );
-        link.setAttribute( 'href', 'javascript:' + script + '' );
-        return link;
-    }
+    // function embedTestJS( script ) {
+    //     var link;
+    //     link = document.createElement( 'a' );
+    //     link.setAttribute( 'href', 'javascript:' + script + '' );
+    //     return link;
+    // }
 
     mockdoc.add = addElement;
     mockdoc.remove = removeElement;
     mockdoc.removeAll = removeAll;
 
+    // to do :: pass in config
+    // to set custom `prefix`
+    // and have 'no ID' option (will deactive removeAll function)
     mockdoc.prefix = prefix;
     mockdoc.active = active;
 

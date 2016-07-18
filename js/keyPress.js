@@ -268,4 +268,93 @@ keyCodes.convertToActionPath( 'tRravIs', '[name="login-username"]', function( da
     console.log( 'done!', data );
 });
 
+// from https://github.com/b-heilman/bmoor-dom/blob/0719e1294f9eea8a65a950a1ea3b7b03b7796647/src/element.js
+function triggerEvent( element, eventName, eventData ){
+    var doc,
+        event,
+        EventClass;
+        
+    // Make sure we use the ownerDocument from the provided node to avoid cross-window problems
+    if (element.ownerDocument){
+        doc = element.ownerDocument;
+    }else if (element.nodeType === 9){
+        // the node may be the document itself, nodeType 9 = DOCUMENT_NODE
+        doc = element;
+    }else if ( typeof document !== 'undefined' ){
+        doc = document;
+    }else{
+        throw new Error('Invalid node passed to fireEvent: ' + element.id);
+    }
+
+    if ( element.dispatchEvent ){
+        try{
+            // modern, except for IE still? https://developer.mozilla.org/en-US/docs/Web/API/Event
+            // I ain't doing them all
+            // slightly older style, give some backwards compatibility
+            switch (eventName) {
+                case 'click':
+                case 'mousedown':
+                case 'mouseup':
+                    EventClass = MouseEvent;
+                    break;
+
+                case 'focus':
+                case 'blur':
+                    EventClass = FocusEvent; // jshint ignore:line
+                    break;
+
+                case 'change':
+                case 'select':
+                    EventClass = UIEvent; // jshint ignore:line
+                    break;
+
+                default:
+                    EventClass = CustomEvent;
+            }
+
+            if ( !eventData ){
+                eventData = { 'view': window, 'bubbles': true, 'cancelable': true };
+            }else{
+                if ( eventData.bubbles === undefined ){
+                    eventData.bubbles = true;
+                }
+                if ( eventData.cancelable === undefined ){
+                    eventData.cancelable = true;
+                }
+            }
+
+            event = new EventClass( eventName, eventData );
+        }catch( ex ){
+            // slightly older style, give some backwards compatibility
+            switch (eventName) {
+                case 'click':
+                case 'mousedown':
+                case 'mouseup':
+                    EventClass = 'MouseEvents';
+                    break;
+
+                case 'focus':
+                case 'change':
+                case 'blur':
+                case 'select':
+                    EventClass = 'HTMLEvents';
+                    break;
+
+                default:
+                    EventClass = 'CustomEvent';
+            }
+            event = doc.createEvent(EventClass);
+            event.initEvent(eventName, true, true); 
+        }
+
+        event.$synthetic = true; // allow detection of synthetic events
+        
+        element.dispatchEvent(event);
+    }else if (element.fireEvent){
+        // IE-old school style
+        event = doc.createEventObject();
+        event.$synthetic = true; // allow detection of synthetic events
+        element.fireEvent('on' + eventName, event);
+    }
+}
 

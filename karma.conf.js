@@ -19,13 +19,15 @@ module.exports = function(config) {
 
             // Metabiosis // mBss
             'js/mbss.action.service.js',
+            'js/mbss.event.service.js',
 
 
             // spec config
             'spec/config.js',
 
             // spec tests
-            'spec/actionServiceSpec.js'
+            'spec/actionServiceSpec.js'//,
+            // 'spec/eventServiceSpec.js'
         ],
 
 

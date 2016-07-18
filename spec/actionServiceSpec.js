@@ -157,7 +157,7 @@ describe('Metabiosis Actions', function() {
             key: 'squid wolf',
             style: 'triangle',
             size: 'extra-medium',
-            pathType: 'spec-items'
+            pathType: 'items'
         };
 
         config.path = [{
@@ -166,10 +166,15 @@ describe('Metabiosis Actions', function() {
             action: function(target) {
                 var augmented = [],
                     fkey = this.$tools.filterKey('Sold Out'),
+                    // tools = this.$tools,
                     content = target,
                     fres; // check for ns
 
                 console.log("removing 'Sold Out' items");
+                // return content.map(function( item ) {
+                //         fres = tools.filterKey(content[i].innerHTML);
+                //         return fres.indexOf(fkey) === -1;
+                // });
                 for (var i = content.length - 1; i >= 0; i--) {
                     fres = this.$tools.filterKey(content[i].innerHTML);
                     if (fres.indexOf(fkey) === -1) {
