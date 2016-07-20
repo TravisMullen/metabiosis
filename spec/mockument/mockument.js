@@ -208,13 +208,7 @@ var mockument = ( function defineMockument() {
     mockdoc.active = active;
 
 
-    mockdoc.build = function( elementMap ) {
-        if ( elementMap ) {
-            build( elementMap );
-        } else {
-            build( defaultElementMap );
-        }
-    };
+    mockdoc.build = build;
 
     return mockdoc;
 })();

@@ -165,18 +165,18 @@ describe('Metabiosis Events', function() {
             key: 'Cardigan',
             pathType: 'testItems'
         },{
-            name: 'Cardigan',
-            key: 'Cardigan',
+            name: 'Random Shit',
+            key: 'farts',
             pathType: 'anotherTest'
         },{
-            name: 'Cardigan',
-            key: 'Cardigan',
+            name: 'Vegan',
+            key: 'vegan',
             pathType: 'testItems'
         },];
 
         // action paths
-        config.path = {};
-        config.path.testItems = [{
+        config.paths = {};
+        config.paths.testItems = [{
             // filtered,
             target: '.item-for-sale',
             action: function(target) {
@@ -185,7 +185,7 @@ describe('Metabiosis Events', function() {
                     content = target,
                     fres; // check for ns
 
-                console.log("removing 'Sold Out' items");
+                console.log("removing 'Sold Out' items", target);
                 for (var i = content.length - 1; i >= 0; i--) {
                     fres = this.$tools.filterKey(content[i].innerHTML);
                     if (fres.indexOf(fkey) === -1) {
@@ -285,9 +285,9 @@ describe('Metabiosis Events', function() {
             }
         }];
 
-        config.path.anotherTest = [{
+        config.paths.anotherTest = [{
             // filtered,
-            target: '.item-for-sale'
+            target: '.item-for-sale',
             action: function(target, augmentedParent) {
                 var augmented = [],
                     fkey = this.$tools.filterKey(this.$config.key),
@@ -323,13 +323,64 @@ describe('Metabiosis Events', function() {
 
     afterEach(function() {
         mockService.removeAll();
+        service.reset();
     });
 
-    it('should add an event to the queue', function() {
-        // console.log("service", service);
-        expect(service.addEvent).toBeDefined();
+    it('should fill event queue when build is called', function() {
+        var total = 0,
+            results;
 
-        service.addEvent();
+        expect(service.build).toBeDefined();
+        
+        for (var i = config.items.length - 1; i >= 0; i--) {
+            total += config.paths[ config.items[i].pathType ].length;
+        }
+
+        results = service.build(config.items, config.paths, config.helpers);
+        expect(results.length).toEqual(total);
+    });
+
+    it('should give each action a item config', function() {
+        var total = 0,
+            results;
+            
+        expect(service.build).toBeDefined();
+        
+        for (var i = config.items.length - 1; i >= 0; i--) {
+            total += config.paths[ config.items[i].pathType ].length;
+        }
+
+        results = service.build(config.items, config.paths, config.helpers);
+        expect(results.length).toEqual(total);
+
+        // console.log("results",results);
+        for (var j = results.length - 1; j >= 0; j--) {
+            // console.log("results[j]",results[j]);
+            console.log("results[j].$config",results[j].$config);
+        }
+
+    });
+
+    it('should should run queue once built', function() {
+        var total = 0,
+            results;
+            
+        expect(service.init).toBeDefined();
+        
+        for (var i = config.items.length - 1; i >= 0; i--) {
+            total += config.paths[ config.items[i].pathType ].length;
+        }
+        // console.log("config.helpers",config.helpers);
+        // console.log("service.heart()",service.heart());
+        results = service.init(config.items, config.paths, config.helpers);
+        // expect(results.length).toEqual(total);
+
+        // console.log("service.heart()",service.heart());
+        // console.log("results",results);
+        // for (var j = results.length - 1; j >= 0; j--) {
+        //     // console.log("results[j]",results[j]);
+        //     console.log("results[j].$config",results[j].$config);
+        // }
 
     });
 

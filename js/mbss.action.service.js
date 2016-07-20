@@ -70,7 +70,7 @@ var mBss = (function(mbss) {
             bindModel = {},
             compiledAction,
             boundAction;
-
+        console.log("handleAction",actionModel);
         // check for valid object (model)
         if (typeof actionModel !== 'object') {
             mbss.log('no action model for the handler!');
@@ -146,17 +146,20 @@ var mBss = (function(mbss) {
         // ]
 
         mbss.log('try target', actionModel.selector);
-
-        bindModel.$tools = actionModel.helpers || {};
+        console.log("mbss.tools",mbss.tools);
+        bindModel.$tools = actionModel.helpers || mbss.tools;
         // 
-        bindModel.$config = actionModel.config || {};
+        bindModel.$config = actionModel.$config || {};
         // set attempt info
         bindModel.$attempts = failedCount;
         if ((failedCount + 1) === (actionModel.attempts || mbss.maxFailedAttempts)) {
             // for use within actions to do "last resort" functionality
             bindModel.$lastAttempt = true;
         }
-
+        console.log("actionModel.action",actionModel.action.toString());
+        console.log("bindModel",bindModel);
+        console.log("bindModel.$tools",bindModel.$tools);
+        console.log("bindModel.$config",bindModel.$config);
         boundAction = actionModel.action.bind(bindModel); // bind current scope for fn and data access
         try {
             // call and pass `targat` and `augmented` for subtarget

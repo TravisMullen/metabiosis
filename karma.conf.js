@@ -26,8 +26,8 @@ module.exports = function(config) {
             'spec/config.js',
 
             // spec tests
-            'spec/actionServiceSpec.js'//,
-            // 'spec/eventServiceSpec.js'
+            // 'spec/actionServiceSpec.js'//,
+            'spec/eventServiceSpec.js'
         ],
 
 
