@@ -13,7 +13,7 @@ describe('Metabiosis Actions', function() {
         var key = '';
         if (name !== undefined) {
             key = name;
-            key = key.replace(/[^a-zA-Z0-9]/g, ''); // remove all non-alphas and non-number
+            key = key.replace(/[^a-zA-Z]/g, ''); // remove all non-alphas
             key = key.toLowerCase();
         }
         return key;
@@ -312,7 +312,7 @@ describe('Metabiosis Actions', function() {
         console.log("1 RESULT =====>", result);
         expect(result).toBeDefined();
 
-        console.log("service.active", service.active);
+        // console.log("service.augmented", service.augmented);
         // expect(service.active.length).toBe( mockData.items-3 );
 
 

@@ -7,7 +7,7 @@ var figgy = ( function setConfig() {
                 var key = '';
                 if ( name !== undefined ) {
                     key = name;
-                    key = key.replace( /[^a-zA-Z0-9]/g, '' ); // remove all non-alphas and non-number
+                    key = key.replace( /[^a-zA-Z0-9]/g, '' ); // remove all non-alphas
                     key = key.toLowerCase();
                 }
                 return key;

@@ -26,11 +26,13 @@ var mBss = (function(mbss) {
 
      * ========================================================================== */
     var status = {
+            pending: 'pending',
             fail: 'fail',
             success: 'success',
             remove: 'remove',
             execute: 'execute'
         },
+        active,
 
         // put this in an object to pass back with removed
         failedMax = 2,
@@ -38,13 +40,30 @@ var mBss = (function(mbss) {
         failedAction,
 
         // data passed back from the action functions
-        __augmented;
+        augmented;
 
+    function setStatus( stat ) {
+        active = status[ stat ];
+        return active;
+    }
+
+    function getStatus( stat ) {
+        var s = active;
+        if ( stat ) {
+            s = ( status[ stat ] === active );
+        }
+        return s;
+    }
+
+    function isActive( stat ) {
+        return getStatus( 'pending' );
+    }
 
     function removeAction(action) {
+        console.log("removeAction",removeAction);
         // placeholder function for event service to map to
         // so action service can call when finished
-        action.failedCount = failedCount;
+        // action.failedCount = failedCount;
         failedCount = 0; //reset count
         mbss.log("removeAction !", action);
         // this will be overridden in the events service
@@ -61,6 +80,7 @@ var mBss = (function(mbss) {
             failedAction = action;
             failedCount = 1;
         }
+        action.failedCount = failedCount;
         mbss.log("failAction" + failedCount + " of " + failedMax);
     }
 
@@ -70,13 +90,19 @@ var mBss = (function(mbss) {
             bindModel = {},
             compiledAction,
             boundAction;
-        console.log("handleAction",actionModel);
+
+
+        active = true;
+
+
+        // console.log("handleAction",actionModel);
         // check for valid object (model)
         if (typeof actionModel !== 'object') {
             mbss.log('no action model for the handler!');
             mbss.removeAction(actionModel);
-            return status.remove;
+            return setStatus( 'remove' );
         }
+
 
         // TARGET (set by user or result from processed augmented data)
         // if valid taget, save as key and set the query as the target
@@ -99,13 +125,13 @@ var mBss = (function(mbss) {
                 // queue fail check to try again
                 failAction(actionModel);
                 mbss.log('target not valid, failing action');
-                return status.fail;
+                return setStatus( 'fail' );
             }
         } else {
-            if ( __augmented === undefined ) {
+            if ( augmented === undefined ) {
                 mbss.removeAction(actionModel);
                 mbss.log('not valid target NOR previous augmented');
-                return status.remove;
+                return setStatus( 'remove' );
             }
         }
 
@@ -117,11 +143,13 @@ var mBss = (function(mbss) {
         // no specified target AND no specified action and still pass back the last augmented
         // this is to keep events from breaking if there is a invalid action item
         if (typeof actionModel.action !== 'function') {
-            actionModel.action = function(target) {
-                mbss.log('No valid action, but you do have a valid target!', target);
+            // actionModel.action = function(target) {
+                mbss.log('No valid action, but you do have a valid target! REMOVE');
                 // return the target results to pass onto next action
-                return target;
-            };
+                // return target;
+            // };
+            mbss.removeAction( actionModel );
+            return setStatus( 'remove' );
         }
 
 
@@ -144,26 +172,33 @@ var mBss = (function(mbss) {
         // 'isSuccess' this is default, only process if previous returns a defined var
         // 'submit' // fires click event on last returned augment
         // ]
-
-        mbss.log('try target', actionModel.selector);
-        console.log("mbss.tools",mbss.tools);
+        // 
+        if (actionModel.firstAction) {
+            // new item/action path, clear out old augmented
+            augmented = [];
+        }
+        if (actionModel.lastAction) {
+            console.log("trigger a timmout!");
+        }
+        // mbss.log('try target', actionModel.selector);
+        // console.log("mbss.tools",mbss.tools);
         bindModel.$tools = actionModel.helpers || mbss.tools;
         // 
         bindModel.$config = actionModel.$config || {};
         // set attempt info
         bindModel.$attempts = failedCount;
-        if ((failedCount + 1) === (actionModel.attempts || mbss.maxFailedAttempts)) {
+        if ((failedCount + 1) === failedMax) {
             // for use within actions to do "last resort" functionality
             bindModel.$lastAttempt = true;
         }
-        console.log("actionModel.action",actionModel.action.toString());
-        console.log("bindModel",bindModel);
-        console.log("bindModel.$tools",bindModel.$tools);
-        console.log("bindModel.$config",bindModel.$config);
+        // console.log("actionModel.action",actionModel.action.toString());
+        // console.log("bindModel",bindModel);
+        // console.log("bindModel.$tools",bindModel.$tools);
+        // console.log("bindModel.$config",bindModel.$config);
         boundAction = actionModel.action.bind(bindModel); // bind current scope for fn and data access
         try {
             // call and pass `targat` and `augmented` for subtarget
-            compiledAction = boundAction(target, __augmented);
+            compiledAction = boundAction(target, augmented);
         } catch (e) {
             if (e instanceof TypeError) {
                 mbss.log('TypeError with Action', e);
@@ -188,37 +223,51 @@ var mBss = (function(mbss) {
         if (typeof compiledAction === 'undefined') { // check for null or NaN?
             mbss.removeAction(actionModel); // remove and move cause it aint getting any better
             mbss.log('not valid action function, complete (to be removed)');
-            return status.remove;
+            return setStatus( 'remove' );
         }
+
+        if (compiledAction === false || compiledAction.length === undefined) { // false!
+            // failAction(actionModel);
+            // 
+            mbss.log('not items found, fail to be tried again');
+            mbss.removeAction(actionModel);
+            return setStatus( 'fail');
+        }
+
 
         // an evaluator had no results, move on to next action in queue
         if (compiledAction.length <= 0) {
             mbss.removeAction(actionModel);
             mbss.log('not items found, complete to be removed as it had items to parse but found no matches');
-            return status.remove;
+            return setStatus( 'remove' );
         }
 
-        if (compiledAction === false) { // false!
-            failAction(actionModel);
-            mbss.log('not items found, fail to be tried again');
-            return status.fail;
-        }
-
-
-        mbss.log('compiledAction', compiledAction.length || compiledAction);
+        mbss.log('compiledAction', compiledAction.length);
 
         // why be biased about the results. if they defined then return them. \
         // assumed to be compiledAction.length > 1;
         // 
         // return results
-        __augmented = compiledAction;
-        return __augmented;
+        // 
+        // if 
+        // if (compiledAction.length === undefined && augmented.length === undefined) {
+            // augmented = [];
+        // } else {
+        augmented = compiledAction;
+        // console.log( augmented" augmented);
+        mbss.removeAction( actionModel );
+        return augmented;
     }
 
-    mbss.handleAction = handleAction;
+    mbss.handleAction = handleAction; // to be used by event handler
     mbss.removeAction = removeAction; // to be overridden by event handler
 
-    mbss.active = __augmented;
+    mbss.isActive = isActive;
+    mbss.getStatus = getStatus;
+
+    mbss.getAugmented = function() {
+        return augmented;
+    };
 
     // mbss.failedCount = failedCount;
     // mbss.failedMax = failedMax;

@@ -1,8 +1,10 @@
-/* globals figgy, mBss, mockument */
+/* globals figgy, mBss, mockument, jasmine, spyOn */
 // jscs:disable maximumLineLength
-    'use strict';
+'use strict';
 describe('Metabiosis Events', function() {
-    var service,
+    var serviceSpy,
+
+        service,
         mockService,
         mockData,
         temp,
@@ -13,12 +15,11 @@ describe('Metabiosis Events', function() {
         var key = '';
         if (name !== undefined) {
             key = name;
-            key = key.replace(/[^a-zA-Z0-9]/g, ''); // remove all non-alphas and non-number
+            key = key.replace(/[^a-zA-Z]/g, ''); // remove all non-alphas
             key = key.toLowerCase();
         }
         return key;
     }
-
 
 
 
@@ -160,19 +161,19 @@ describe('Metabiosis Events', function() {
             style: 'triangle',
             size: 'extra-medium',
             pathType: 'testItems'
-        },{
+        }, {
             name: 'Cardigan',
             key: 'Cardigan',
             pathType: 'testItems'
-        },{
+        }, {
             name: 'Random Shit',
             key: 'farts',
             pathType: 'anotherTest'
-        },{
+        }, {
             name: 'Vegan',
             key: 'vegan',
             pathType: 'testItems'
-        },];
+        }, ];
 
         // action paths
         config.paths = {};
@@ -185,7 +186,7 @@ describe('Metabiosis Events', function() {
                     content = target,
                     fres; // check for ns
 
-                console.log("removing 'Sold Out' items", target);
+                // console.log("removing 'Sold Out' items", target);
                 for (var i = content.length - 1; i >= 0; i--) {
                     fres = this.$tools.filterKey(content[i].innerHTML);
                     if (fres.indexOf(fkey) === -1) {
@@ -206,7 +207,7 @@ describe('Metabiosis Events', function() {
                     content = target,
                     fres; // check for ns
 
-                console.log("selecting only '" + fkey + "' items");
+                // console.log("selecting only '" + fkey + "' items");
                 for (var i = augmentedParent.length - 1; i >= 0; i--) {
                     fres = this.$tools.filterKey(augmentedParent[i].innerHTML);
                     if (fres.indexOf(fkey) >= 0) {
@@ -229,7 +230,7 @@ describe('Metabiosis Events', function() {
                     content = target,
                     fres; // check for ns
 
-                console.log("selecting only '" + fkey + "' items");
+                // console.log("selecting only '" + fkey + "' items");
                 for (var i = augmentedParent.length - 1; i >= 0; i--) {
                     fres = this.$tools.filterKey(augmentedParent[i].innerHTML);
                     // console.log("augmentedParent[i].innerHTML",augmentedParent[i].innerHTML);
@@ -256,7 +257,7 @@ describe('Metabiosis Events', function() {
                     content = target,
                     fres; // check for ns
 
-                console.log("selecting only '" + fkey + "' items");
+                // console.log("selecting only '" + fkey + "' items");
                 for (var i = augmentedParent.length - 1; i >= 0; i--) {
                     fres = this.$tools.filterKey(augmentedParent[i].innerHTML);
                     // console.log("augmentedParent[i].innerHTML",augmentedParent[i].innerHTML);
@@ -280,7 +281,7 @@ describe('Metabiosis Events', function() {
             // target: true,
             action: function(target, augmentedParent) {
                 var t = augmentedParent[0].querySelector('[href]');
-                console.log("click!",t);
+                // console.log("click!", t);
                 this.$tools.clickSyth(t);
             }
         }];
@@ -309,7 +310,7 @@ describe('Metabiosis Events', function() {
             // target: true,
             action: function(target, augmentedParent) {
                 var t = augmentedParent[0];
-                console.log("do some to !",t);
+                // console.log("do some to !", t);
                 t.classList.add("found-it");
                 // this.$tools.clickSyth(t);
             }
@@ -318,7 +319,20 @@ describe('Metabiosis Events', function() {
         // config.spec = true;
 
         service = mBss;
-        // config = ;
+
+        // serviceSpy = jasmine.createSpyObj("service", [
+        //     'handleAction',
+        //     'removeAction',
+        //     'build',
+        //     'heart',
+        //     'init'
+        // ]);
+
+    });
+
+    beforeEach(function() {
+        // timerHandleAction = jasmine.createSpy("service.handleAction");
+        jasmine.clock().install();
     });
 
     afterEach(function() {
@@ -326,156 +340,466 @@ describe('Metabiosis Events', function() {
         service.reset();
     });
 
+    afterEach(function() {
+        jasmine.clock().uninstall();
+    });
+
+
+
+
     it('should fill event queue when build is called', function() {
         var total = 0,
             results;
 
         expect(service.build).toBeDefined();
-        
+
         for (var i = config.items.length - 1; i >= 0; i--) {
-            total += config.paths[ config.items[i].pathType ].length;
+            total += config.paths[config.items[i].pathType].length;
         }
 
         results = service.build(config.items, config.paths, config.helpers);
         expect(results.length).toEqual(total);
+        console.log("service.eventQueue",service.eventQueue);
+        expect(service.getQueue().length).toEqual(total);
     });
 
     it('should give each action a item config', function() {
         var total = 0,
             results;
-            
+
         expect(service.build).toBeDefined();
-        
+
         for (var i = config.items.length - 1; i >= 0; i--) {
-            total += config.paths[ config.items[i].pathType ].length;
+            total += config.paths[config.items[i].pathType].length;
         }
 
         results = service.build(config.items, config.paths, config.helpers);
+
         expect(results.length).toEqual(total);
+        expect(service.getQueue().length).toEqual(total);
 
         // console.log("results",results);
         for (var j = results.length - 1; j >= 0; j--) {
             // console.log("results[j]",results[j]);
-            console.log("results[j].$config",results[j].$config);
+            // console.log("results[j].$config", results[j].$config);
         }
 
     });
 
-    it('should should run queue once built', function() {
+    it('should return agumented from first action once built', function() {
         var total = 0,
+            rate = service.heart().rate,
             results;
-            
-        expect(service.init).toBeDefined();
-        
-        for (var i = config.items.length - 1; i >= 0; i--) {
-            total += config.paths[ config.items[i].pathType ].length;
-        }
-        // console.log("config.helpers",config.helpers);
-        // console.log("service.heart()",service.heart());
-        results = service.init(config.items, config.paths, config.helpers);
-        // expect(results.length).toEqual(total);
 
-        // console.log("service.heart()",service.heart());
-        // console.log("results",results);
-        // for (var j = results.length - 1; j >= 0; j--) {
-        //     // console.log("results[j]",results[j]);
-        //     console.log("results[j].$config",results[j].$config);
-        // }
+        for (var i = config.items.length - 1; i >= 0; i--) {
+            total += config.paths[config.items[i].pathType].length;
+        }
+
+        spyOn(service,'handleAction');
+
+        expect(service.init).toBeDefined();
+
+        expect(service.handleAction).not.toHaveBeenCalled();
+
+        results = service.init(config.items, config.paths, config.helpers);
+        expect(service.getQueue().length).toEqual(total);
+
+        jasmine.clock().tick(rate + rate*0.01);
+
+        expect(service.handleAction).toHaveBeenCalled();
 
     });
 
-    // it('should have handleAction', function() {
-    //     // console.log("service", service);
-    //     expect(service.removeAction).toBeDefined();
+    it('should contain all actions required for each item', function() {
+        var total = 0,
+            rate = service.heart().rate,
+            results;
+        expect(service.init).toBeDefined();
+        for (var i = config.items.length - 1; i >= 0; i--) {
+            total += config.paths[config.items[i].pathType].length;
+        }
+        results = service.init(config.items, config.paths, config.helpers);
+        jasmine.clock().tick(rate + rate*0.01);
+        // a susseful first action removes it from the length
+        expect(results.length).toEqual(total-1); 
+        expect(service.getQueue().length).toEqual(total-1);
 
-    // });
+    });
 
 
-    // it('should have handleAction', function() {
-    //     // console.log("service", service);
-    //     expect(service.removeAction).toBeDefined();
+    it("expect heartbeat to be true after init", function() {
+        var results;
 
-    // });
+        expect(service.heart().beat).toBeFalsy();
+
+        results = service.init(config.items, config.paths, config.helpers);
 
 
-    // should build event queue
-    // 
-    // sbould pull from event queue
-    // 
-    // should remove from event queue
-    // when bad
-    // when is compelte
-    // when is failed
-    // 
+        // expect(service.getQueue().length).toBeGreaterThan(0);
+        expect(service.heart().beat).toBeTruthy();
+        expect(service.heart().rate).toBeGreaterThan(0);
+        expect(service.heart().count).toBeDefined();
+    });
 
-    // it('should should accept action and return result', function() {
-    //     // console.log("config.path", config.path);
-    //     var result,
-    //         // item,
-    //         action;
 
-    //     action = config.path[0];
-    //     action.helpers = config.helpers;
-    //     action.config = config.item;
+    it("expect heartbeat to be able to be killed (stopped) and maintain queue", function() {
+        var results,
+            queue;
 
-    //     console.log("mockData.items.length", mockData.items.length);
+        expect(service.heart().beat).toBeFalsy();
 
-    //     // for ( var i = 0; i < config.path.length; i++ ) {
-    //     //     action = service.handleAction( config.path[ i ] );
-    //     //     console.log( i+' RESULT =====>', result );
-    //     //     expect( result ).toBeDefined();
+        results = service.init(config.items, config.paths, config.helpers);
+        
+        queue = service.getQueue().length;
+
+        expect(service.heart().beat).toBeTruthy();
+
+        service.kill();
+        
+        expect(service.heart().beat).toBeFalsy();
+        expect(service.getQueue().length).toEqual(queue);
+    });
+
+    it("expect heartbeat reset to stop and clear queue", function() {
+        var results;
+
+        expect(service.heart().beat).toBeFalsy();
+
+        results = service.init(config.items, config.paths, config.helpers);
+
+
+        // expect(service.getQueue().length).toBeGreaterThan(0);
+        expect(service.heart().beat).toBeTruthy();
+
+        service.reset();
+        
+        expect(service.heart().beat).toBeFalsy();
+        expect(service.getQueue().length).toEqual(0);
+    });
+
+    it("expect heartbeat to drive actions and heart beat", function() {
+        var results,
+            total = 0,
+            rate = service.heart().rate;
+
+        for (var i = config.items.length - 1; i >= 0; i--) {
+            total += config.paths[config.items[i].pathType].length;
+        }
+
+        results = service.init(config.items, config.paths, config.helpers);
+
+        for (var j = 0; j <= total; j++) {
+            jasmine.clock().tick(rate + rate*0.01);
+
+            expect(service.heart().count).not.toBeLessThan( j );
+        }
+
+    });
+
+
+
+    // it("expect heartbeat to progess the event queue", function() {
+    //     var results,
+    //         total = 0,
+    //         rate = service.heart().rate;
+
+    //     spyOn(service,'removeAction');
+
+    //     for (var i = config.items.length - 1; i >= 0; i--) {
+    //         total += config.paths[config.items[i].pathType].length;
+    //     }
+
+    //     expect(service.removeAction).not.toHaveBeenCalled();
+    //     results = service.init(config.items, config.paths, config.helpers);
+    //     console.log("service.getQueue().length",service.getQueue().length);
+    //         jasmine.clock().tick(rate + rate*0.01);
+
+    //         expect(service.removeAction).toHaveBeenCalled();
+
+    //         console.log("service.getQueue().length",service.getQueue().length);
     //     // }
 
-    //     result = service.handleAction(action);
-    //     console.log("1 RESULT =====>", result);
-    //     expect(result).toBeDefined();
-
-    //     console.log("service.active", service.active);
-    //     // expect(service.active.length).toBe( mockData.items-3 );
-
-
-    //     // expect(validateTest).not.toBeDefined();
-
-    //     action = config.path[1];
-    //     action.helpers = config.helpers;
-    //     action.config = config.item;
-    //     result = service.handleAction(action);
-    //     console.log("2 RESULT =====>", result);
-
-    //     expect(result).toBeDefined();
-
-    //     action = config.path[2];
-    //     action.helpers = config.helpers;
-    //     action.config = config.item;
-    //     result = service.handleAction(action);
-    //     console.log("3 RESULT =====>", result);
-
-    //     expect(result).toBeDefined();
-
-    //     action = config.path[3];
-    //     action.helpers = config.helpers;
-    //     action.config = config.item;
-    //     result = service.handleAction(action);
-    //     console.log("4 RESULT =====>", result);
-
-    //     expect(result).toBeDefined();
-
-
-    //     action = config.path[4];
-    //     action.helpers = config.helpers;
-    //     action.config = config.item;
-    //     result = service.handleAction(action);
-    //     console.log("5 RESULT =====>", result);
-
-    //     expect(result).toBeDefined();
-
-    //     mockService.removeAll();
-
-    //     testGlobal = validateTest || false;
-    //     console.log("document.querySelector('body').innerHTML", document.querySelector('body').innerHTML);
-    //     expect(testGlobal).toBe(true);
-    //     // console.log("validateTest", testGlobal);
-    //     // expect(service.active.length).toBe( 3 );
     // });
+
+    it("should call remove action on valid returned augmented", function() {
+        var results,
+            rate = service.heart().rate;
+
+        spyOn(service,'removeAction');
+
+        expect(service.getQueue().length).toBe(0);
+        expect(service.removeAction).not.toHaveBeenCalled();
+        
+        results = service.init(config.items, config.paths, config.helpers);
+
+        jasmine.clock().tick(rate + rate*0.01);
+
+
+        expect(service.getAugmented().length).toBeGreaterThan(0);
+        expect(service.removeAction).toHaveBeenCalled();
+
+    });
+
+    it("should call remove action on returned augmented is zero", function() {
+        var results,
+            rate = service.heart().rate;
+
+        spyOn(service,'removeAction');
+
+        // assigning bad target to first action
+        config.paths.testItems[0] = {
+            // filtered,
+            target: '.item-for-sale',
+            action: function(target) {
+                return 0;
+            }
+        };
+        config.paths.testItems[2] = {
+            // filtered,
+            // target: '.item-for-sale',
+            action: function(target) {
+                return [];
+            }
+        };
+        expect(service.getQueue().length).toBe(0);
+        
+        expect(service.removeAction).not.toHaveBeenCalled();
+
+        console.log("service.getAugmented().length",service.getAugmented().length);
+        console.log("service.heart().count",service.heart().count);
+        // 
+
+
+        results = service.init(config.items, config.paths, config.helpers);
+        jasmine.clock().tick(rate + rate*0.01);
+
+        console.log("service.augmented",service.augmented);
+        expect(service.getAugmented().length).toBe(0);
+
+        console.log("service.getQueue().length !!!!!!!",service.getQueue().length);
+        expect(service.removeAction).toHaveBeenCalled();
+
+
+        jasmine.clock().tick(rate + rate*0.01);
+        console.log("service.getQueue().length !!!!!!!",service.getQueue().length);
+
+    });
+
+ it("should call remove action on bad action", function() {
+        var results,
+            count,
+            rate = service.heart().rate;
+
+        spyOn(service,'removeAction').and.callThrough();
+        // spyOn(service,'removeAction').and.callFake(function() {
+        //   ++count;
+        //   // return service.removeAction();
+        // });
+
+        // assigning bad target to first action
+        config.paths.testItems[0].action = 'not a function';
+        config.paths.testItems[2].action = undefined;
+        // console.log("service.getAugmented().length",service.getAugmented().length);
+        expect(service.getQueue().length).toBe(0);
+        
+        expect(service.removeAction).not.toHaveBeenCalled();
+
+        results = service.init(config.items, config.paths, config.helpers);
+        count = service.getQueue().length;
+
+        jasmine.clock().tick(rate + rate*0.01);
+
+        expect(service.removeAction).toHaveBeenCalled();
+
+        jasmine.clock().tick(rate + rate*0.01);
+
+        expect(service.getQueue().length).toBe(count - 2);
+
+    });
+
+    it("should return last agumented if returned augmented is zero", function() {
+        var results,
+            aug,
+            // queue,
+            rate = service.heart().rate;
+
+        spyOn(service,'removeAction');
+
+        // assigning bad target to second action
+        config.paths.testItems[1].action = {
+            // filtered,
+            // target: '.item-for-sale',
+            action: function(target) {
+                var augmented = [],
+                    fkey = this.$tools.filterKey('will never be found'),
+                    content = target,
+                    fres; // check for ns
+
+                // console.log("removing 'Sold Out' items", target);
+                for (var i = content.length - 1; i >= 0; i--) {
+                    fres = this.$tools.filterKey(content[i].innerHTML);
+                    if (fres.indexOf(fkey) === -1) {
+                        // console.log( 'remaing item - ', fres );
+                        augmented.unshift(target[i]);
+                    }
+                }
+
+                return augmented; // if length 0 return false
+            }
+        };
+
+        config.paths.testItems[2].action = {
+            // filtered,
+            // target: '.item-for-sale',
+            action: function(target) {
+                var augmented = [],
+                    fkey = this.$tools.filterKey('will never be found'),
+                    content = target,
+                    fres; // check for ns
+
+                // console.log("removing 'Sold Out' items", target);
+                for (var i = content.length - 1; i >= 0; i--) {
+                    fres = this.$tools.filterKey(content[i].innerHTML);
+                    if (fres.indexOf(fkey) === -1) {
+                        // console.log( 'remaing item - ', fres );
+                        augmented.unshift(target[i]);
+                    }
+                }
+
+                return augmented; // if length 0 return false
+            }
+        };
+        // expect(service.getQueue().length).toBe(0);
+        
+        // expect(service.handleAction).not.toHaveBeenCalled();
+
+        results = service.init(config.items, config.paths, config.helpers);
+
+        jasmine.clock().tick(rate + rate*0.01);
+        aug = service.getAugmented().length;
+
+        // expect(service.handleAction).toHaveBeenCalled();
+
+        jasmine.clock().tick(rate + rate*0.01);
+        expect(service.getAugmented().length).toBe(aug);
+
+
+        jasmine.clock().tick(rate + rate*0.01);
+        expect(service.getAugmented().length).toBe(aug);
+    });
+
+    // it("should remove action from event queue on remove action", function() {
+    //     var results,
+    //         queue;
+
+    //     expect(service.getQueue().length).toBe(0);
+
+    //     results = service.init(config.items, config.paths, config.helpers);
+
+    //     expect(service.getAugmented().length).toBeGreaterThan(0);
+
+    //     queue = service.getQueue().length;
+
+    //     service.removeAction();
+
+    //     expect( service.getQueue().length ).toBe(queue-1);
+
+    // });
+    // it('should call remove if target is found but action does not return augmented', function() {
+    //       var results,
+    //         total = 0,
+    //         queue;
+    //               for (var i = config.items.length - 1; i >= 0; i--) {
+    //         total += config.paths[config.items[i].pathType].length;
+    //     }
+
+    //     config.paths.testItems[0].action = {
+    //         // filtered,
+    //         target: '.item-for-sale',
+    //         action: function(target) {
+    //             var augmented = [],
+    //                 fkey = this.$tools.filterKey('will never be found'),
+    //                 content = target,
+    //                 fres; // check for ns
+
+    //             // console.log("removing 'Sold Out' items", target);
+    //             for (var i = content.length - 1; i >= 0; i--) {
+    //                 fres = this.$tools.filterKey(content[i].innerHTML);
+    //                 if (fres.indexOf(fkey) === -1) {
+    //                     // console.log( 'remaing item - ', fres );
+    //                     augmented.unshift(target[i]);
+    //                 }
+    //             }
+
+    //             return augmented; // if length 0 return false
+    //         }
+    //     };
+
+    //     // var results,
+    //     //     rate = service.heart().rate;
+
+    //     spyOn(service,'removeAction');
+
+    //     // expect(service.getQueue().length).toBe(0);
+        
+    //     // results = service.init(config.items, config.paths, config.helpers);
+
+    //     // expect(service.getAugmented().length).toBeGreaterThan(0);
+    //     // expect(service.removeAction).not.toHaveBeenCalled();
+
+
+    // });
+
+    // it('should fail action if function is bad', function() {
+    //     var results;
+
+    //     config.paths.testItems[0].action = {
+    //         // filtered,
+    //         target: '.item-for-sale',
+    //         action: function(target) {
+    //             var augmented = [],
+    //                 fkey = this.$tools.filterKey('Sold Out'),
+    //                 content = target,
+    //                 fres; // check for ns
+
+    //             // console.log("removing 'Sold Out' items", target);
+    //             for (var i = content.length - 1; i >= 0; i--) {
+    //                 fres = this.$tools.filterKey(content[i].innerHTML);
+    //                 if (fres.indexOf(fkey) === -1) {
+    //                     // console.log( 'remaing item - ', fres );
+    //                     augmented.unshift(target[i]);
+    //                 }
+    //             }
+
+    //             return augmented; // if length 0 return false
+    //         }
+    //     };
+
+    //     results = service.init(config.items, config.paths, config.helpers);
+    //     // console.log("service", service);
+    //     expect(service.removeAction).toBeDefined();
+
+    // });
+
+
+    // it('should remove action if has failed the max amount of times', function() {
+    //     // console.log("service", service);
+    //     expect(service.removeAction).toBeDefined();
+
+    // });
+
+    // it('should run() after last action in path (queueNext)', function() {
+    //     // console.log("service", service);
+    //     expect(service.removeAction).toBeDefined();
+
+    // });
+
+
+    // it('should have handleAction', function() {
+    //     // console.log("service", service);
+    //     expect(service.removeAction).toBeDefined();
+
+    // });
+
 
 });
